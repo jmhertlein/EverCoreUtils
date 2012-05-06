@@ -31,21 +31,21 @@ public class MCLogger {
         DEBUGGING = debugging;
     }
 
-    public static void logAssert(boolean bool, String desc) {
+    public void logAssert(boolean bool, String desc) {
         if (!bool) {
             logDebug("WARNING: ASSERTION FAILED: " + desc);
         }
     }
 
-    public static void logSevere(String msg) {
+    public void logSevere(String msg) {
         log.log(Level.SEVERE, "[MCTowns]: " + msg);
     }
 
-    public static void logInfo(String msg) {
+    public void logInfo(String msg) {
         log.log(Level.INFO, "[MCTowns]: " + msg);
     }
 
-    public static void logDebug(String msg) {
+    public void logDebug(String msg) {
         if (DEBUGGING) {
             logInfo("[DEBUG]:" + msg);
         }
