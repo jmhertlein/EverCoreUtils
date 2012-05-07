@@ -38,11 +38,11 @@ public class MCLogger {
     }
 
     public void logSevere(String msg) {
-        log.log(Level.SEVERE, "[MCTowns]: " + msg);
+        log.log(Level.SEVERE, PREFIX + msg);
     }
 
     public void logInfo(String msg) {
-        log.log(Level.INFO, "[MCTowns]: " + msg);
+        log.log(Level.INFO, PREFIX + msg);
     }
 
     public void logDebug(String msg) {
