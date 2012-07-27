@@ -15,7 +15,8 @@ public class ChatUtil {
             ERR = ChatColor.RED,
             WARN = ChatColor.YELLOW,
             SUCC = ChatColor.GREEN,
-            INFO = ChatColor.LIGHT_PURPLE;
+            INFO = ChatColor.LIGHT_PURPLE,
+            INFO_ALT = ChatColor.DARK_BLUE;
     
     /**
      * Formats the given 2d array of strings with respect to columns. 
