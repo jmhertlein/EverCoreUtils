@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.everdras.core.command;
+package net.jmhertlein.core.command;
 
 /**
  *

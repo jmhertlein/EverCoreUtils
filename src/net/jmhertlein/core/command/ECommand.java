@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.everdras.core.command;
+package net.jmhertlein.core.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,13 +13,13 @@ import java.util.Scanner;
  * @author Joshua
  */
 public class ECommand {
-    public static final String DISABLE_AUTOACTIVE = "-na", 
-            RECURSIVE = "-r", 
-            ADMIN = "-admin", 
-            ALL = "-A", 
-            NO_AUTOBUILD_PLOT_SIGN = "-nosign", 
-            VERBOSE = "-v", 
-            VERY_VERBOSE = "-vv", 
+    public static final String DISABLE_AUTOACTIVE = "-na",
+            RECURSIVE = "-r",
+            ADMIN = "-admin",
+            ALL = "-A",
+            NO_AUTOBUILD_PLOT_SIGN = "-nosign",
+            VERBOSE = "-v",
+            VERY_VERBOSE = "-vv",
             VERY_VERY_VERBOSE = "-vvv";
     private ArrayList<String> args, flags;
 

@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.everdras.core.command;
+package net.jmhertlein.core.command;
 
-import static me.everdras.core.chat.ChatUtil.ERR;
+import static net.jmhertlein.core.chat.ChatUtil.ERR;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

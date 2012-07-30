@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.everdras.core.location;
+package net.jmhertlein.core.location;
 
 import java.io.Serializable;
 import org.bukkit.Server;

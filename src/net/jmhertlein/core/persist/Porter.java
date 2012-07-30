@@ -1,4 +1,4 @@
-package me.everdras.core.persist;
+package net.jmhertlein.core.persist;
 
 import java.io.*;
 
@@ -116,7 +116,7 @@ public class Porter {
     }
 
     /**
-     * 
+     *
      * @return the path of the file to which which Porter is pointing
      */
     public String getPath() {
