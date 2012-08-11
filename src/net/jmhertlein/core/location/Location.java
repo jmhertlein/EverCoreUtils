@@ -149,11 +149,23 @@ public class Location implements Serializable {
         return new org.bukkit.Location(s.getWorld(loc.world), loc.getX(), loc.getY(), loc.getZ());
     }
 
-    public List<Integer> toList() {
-        LinkedList<Integer> ret = new LinkedList<>();
-        ret.add(x);
-        ret.add(y);
-        ret.add(z);
+    public List<String> toList() {
+        LinkedList<String> ret = new LinkedList<>();
+        ret.add("" + x);
+        ret.add("" + y);
+        ret.add("" + z);
+        ret.add(world);
+
+        return ret;
+    }
+
+    public static Location fromList(List<String> list) {
+        Location ret = new Location(null, 0, 0, 0);
+
+        ret.x = Integer.parseInt(list.get(0));
+        ret.y = Integer.parseInt(list.get(1));
+        ret.z = Integer.parseInt(list.get(2));
+        ret.world = list.get(3);
 
         return ret;
     }
