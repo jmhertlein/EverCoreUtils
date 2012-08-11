@@ -5,6 +5,8 @@
 package net.jmhertlein.core.location;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import org.bukkit.Server;
 
 /**
@@ -145,5 +147,14 @@ public class Location implements Serializable {
      */
     public static org.bukkit.Location convertToBukkitLocation(Server s, Location loc) {
         return new org.bukkit.Location(s.getWorld(loc.world), loc.getX(), loc.getY(), loc.getZ());
+    }
+
+    public List<Integer> toList() {
+        LinkedList<Integer> ret = new LinkedList<>();
+        ret.add(x);
+        ret.add(y);
+        ret.add(z);
+
+        return ret;
     }
 }
