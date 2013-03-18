@@ -12,13 +12,13 @@ import org.bukkit.entity.Player;
  *
  * @author joshua
  */
-public class CommandSenderWrapper {
+public class LocalSender {
     public static final String INSUF_PERM_MSG = "Insufficient permission.";
     protected CommandSender sender;
     protected Player player;
     protected boolean console;
 
-    public CommandSenderWrapper(CommandSender sender) {
+    public LocalSender(CommandSender sender) {
         this.sender = sender;
 
         player = (sender instanceof Player ? (Player) sender : null);
