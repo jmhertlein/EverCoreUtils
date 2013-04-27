@@ -15,14 +15,20 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class RSACipherOutputStream extends CipherOutputStream {
 
+    private Cipher c;
+
     public RSACipherOutputStream(OutputStream os, PublicKey pubkey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         super(os, prepareCipher(pubkey));
+        this.c = prepareCipher(pubkey);
     }
-    
+
+    public Cipher getCipher() {
+        return c;
+    }
+
     protected static Cipher prepareCipher(Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.ENCRYPT_MODE, key);
         return c;
     }
-
 }

@@ -26,14 +26,24 @@ import sun.misc.BASE64Encoder;
  * @author joshua
  */
 public class CryptoManager {
+
     public void storeKey(String file, Key key) {
-        try(FileOutputStream fos = new FileOutputStream(file); PrintStream ps = new PrintStream(fos)) {
+        File f = new File(file);
+        if (!f.exists())
+            try {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        try (FileOutputStream fos = new FileOutputStream(file); PrintStream ps = new PrintStream(fos)) {
             ps.println(new BASE64Encoder().encode(key.getEncoded()));
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
-    
+
     public PrivateKey loadPrivateKey(String file) {
         try {
             return KeyFactory.getInstance("RSA").generatePrivate(getPKCS8KeySpec(file));
@@ -42,10 +52,10 @@ public class CryptoManager {
         } catch (InvalidKeySpecException ex) {
             Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
-    
+
     public PublicKey loadPubKey(String file) {
         try {
             return KeyFactory.getInstance("RSA").generatePublic(getX509KeySpec(file));
@@ -54,51 +64,59 @@ public class CryptoManager {
         } catch (InvalidKeySpecException ex) {
             Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
-    
+
+    public PublicKey loadPubKey(File f) {
+        return loadPubKey(f.getPath());
+    }
+
+    public PrivateKey loadPrivateKey(File f) {
+        return loadPrivateKey(f.getPath());
+    }
+
     private X509EncodedKeySpec getX509KeySpec(String file) {
         byte[] decoded;
-        try(Scanner scan = new Scanner(new File(file))) {
+        try (Scanner scan = new Scanner(new File(file))) {
             String output = "";
-            while(scan.hasNextLine()) {
+            while (scan.hasNextLine()) {
                 output += scan.nextLine();
             }
-            
+
             //System.out.println("Input read:");
             //System.out.println(output);
-            
+
             BASE64Decoder decoder = new BASE64Decoder();
             decoded = decoder.decodeBuffer(output);
-            
-        } catch(IOException ioe) {
+
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             return null;
         }
-        
+
         return new X509EncodedKeySpec(decoded);
     }
-    
+
     private PKCS8EncodedKeySpec getPKCS8KeySpec(String file) {
         byte[] decoded;
-        try(Scanner scan = new Scanner(new File(file))) {
+        try (Scanner scan = new Scanner(new File(file))) {
             String output = "";
-            while(scan.hasNextLine()) {
+            while (scan.hasNextLine()) {
                 output += scan.nextLine();
             }
-            
+
             BASE64Decoder decoder = new BASE64Decoder();
             decoded = decoder.decodeBuffer(output);
-            
-        } catch(IOException ioe) {
+
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             return null;
         }
-        
+
         return new PKCS8EncodedKeySpec(decoded);
     }
-    
+
     public static KeyPair newRSAKeyPair(int bits) {
         KeyPairGenerator keyPairGen;
         try {

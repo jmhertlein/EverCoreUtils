@@ -14,9 +14,14 @@ import javax.crypto.NoSuchPaddingException;
  * @author joshua
  */
 public class RSACipherInputStream extends CipherInputStream {
-
+    private Cipher c;
     public RSACipherInputStream(InputStream is, PrivateKey privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         super(is, prepareCipher(privateKey));
+        this.c = prepareCipher(privateKey);
+    }
+    
+    public Cipher getCipher() {
+        return c;
     }
     
     protected static Cipher prepareCipher(Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
