@@ -18,6 +18,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -42,6 +44,10 @@ public class CryptoManager {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+    
+    public void storeKey(File f, Key key) {
+        storeKey(f.getPath(), key);
     }
 
     public PrivateKey loadPrivateKey(String file) {
@@ -129,5 +135,20 @@ public class CryptoManager {
         keyPairGen.initialize(bits);
 
         return keyPairGen.generateKeyPair();
+    }
+    
+    public static SecretKey newAESKey(int bits) {
+        KeyGenerator keyGen;
+        
+        try {
+            keyGen = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } 
+        
+        keyGen.init(bits);
+        
+        return keyGen.generateKey();
     }
 }
