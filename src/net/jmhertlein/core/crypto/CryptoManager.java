@@ -52,10 +52,11 @@ public class CryptoManager {
 
     public PrivateKey loadPrivateKey(String file) {
         try {
-            return KeyFactory.getInstance("RSA").generatePrivate(getPKCS8KeySpec(file));
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeySpecException ex) {
+            PKCS8EncodedKeySpec spec = getPKCS8KeySpec(file);
+            if(spec == null)
+                return null;
+            return KeyFactory.getInstance("RSA").generatePrivate(spec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -64,10 +65,11 @@ public class CryptoManager {
 
     public PublicKey loadPubKey(String file) {
         try {
-            return KeyFactory.getInstance("RSA").generatePublic(getX509KeySpec(file));
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeySpecException ex) {
+            X509EncodedKeySpec spec = getX509KeySpec(file);
+            if(spec == null)
+                return null;
+            return KeyFactory.getInstance("RSA").generatePublic(spec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -90,14 +92,10 @@ public class CryptoManager {
                 output += scan.nextLine();
             }
 
-            //System.out.println("Input read:");
-            //System.out.println(output);
-
             BASE64Decoder decoder = new BASE64Decoder();
             decoded = decoder.decodeBuffer(output);
 
         } catch (IOException ioe) {
-            ioe.printStackTrace();
             return null;
         }
 
