@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import net.jmhertlein.core.mail.GoogleMail;
 
 /**
  *
@@ -79,10 +82,15 @@ public class ReceiveBugReportsWorkerThread extends Thread {
                 synchronized (reports) {
                     reports.add(received);
                 }
+                //send email
+                if(!BugReportDaemon.canSendEmail())
+                    GoogleMail.send(BugReportDaemon.getEmailSenderName(), BugReportDaemon.getEmailSenderPassword(), BugReportDaemon.getEmailDestination(), "Bug Report from " + client.getInetAddress().toString(), received.toString());
             }
         } catch (IOException ex) {
             System.err.println("Error dowloading: " + ex.getLocalizedMessage());
         } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ReceiveBugReportsWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
             Logger.getLogger(ReceiveBugReportsWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -9,10 +9,14 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import net.jmhertlein.core.mail.GoogleMail;
 
 /**
- * The BugReportDaemon class is the main class for the BRD project.
- * This class handles the CLI front-end to the daemon.
+ * The BugReportDaemon class is the main class for the BRD project. This class
+ * handles the CLI front-end to the daemon.
+ *
  * @author joshua
  */
 public class BugReportDaemon {
@@ -22,6 +26,7 @@ public class BugReportDaemon {
     private static boolean done, running;
     private static Scanner scan;
     private static Thread th;
+    private static String emailDestination, emailSenderName, emailSenderPassword;
 
     public static void main(String[] args) {
         setupShutdownHook();
@@ -29,6 +34,25 @@ public class BugReportDaemon {
         running = false;
         done = false;
         scan = new Scanner(System.in);
+        
+        try {
+            File f = new File("./brd.config");
+        
+            Scanner fileScan = new Scanner(f);
+            if (fileScan.hasNextLine()) {
+                emailDestination = fileScan.nextLine().trim();
+            }
+            if (fileScan.hasNextLine()) {
+                emailSenderName = fileScan.nextLine().trim();
+            }
+            if (fileScan.hasNextLine()) {
+                emailSenderPassword = fileScan.nextLine().trim();
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(BugReportDaemon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
 
         start();
 
@@ -70,6 +94,11 @@ public class BugReportDaemon {
                 case "print":
                     print();
                     break;
+
+                case "testmail":
+                    sendTestEmail();
+                    System.out.println("Sent test email.");
+                    break;
             }
         }
 
@@ -85,6 +114,7 @@ public class BugReportDaemon {
         System.out.println("info - prints info about current state");
         System.out.println("clear - delete currently held reports");
         System.out.println("print - print all currently held reports");
+        System.out.println("testmail - send a test email");
     }
 
     private static void dumpReportsToFile(Set<BugReport> reports) {
@@ -115,8 +145,8 @@ public class BugReportDaemon {
     }
 
     /**
-     * Stops the daemon from listening on the network port. 
-     * Does NOT cause the daemon to exit- it will continue to respond to stdin
+     * Stops the daemon from listening on the network port. Does NOT cause the
+     * daemon to exit- it will continue to respond to stdin
      */
     public static void stop() {
         if (!running) {
@@ -164,8 +194,8 @@ public class BugReportDaemon {
     }
 
     /**
-     * Causes the daemon to exit. The CLI will stop responding.
-     * All threads will be requested to terminate
+     * Causes the daemon to exit. The CLI will stop responding. All threads will
+     * be requested to terminate
      */
     public static void quit() {
         System.out.println("Quitting...");
@@ -176,11 +206,43 @@ public class BugReportDaemon {
     private static void setupShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                if (running)
+                if (running) {
                     quit();
-                if (reports.size() > 0)
+                }
+                if (reports.size() > 0) {
                     dumpReportsToFile(reports);
+                }
             }
         }));
+    }
+
+    public static String getEmailDestination() {
+        return emailDestination;
+    }
+
+    public static String getEmailSenderName() {
+        return emailSenderName;
+    }
+
+    public static String getEmailSenderPassword() {
+        return emailSenderPassword;
+    }
+
+    private static void sendTestEmail() {
+        if(!canSendEmail()) {
+            System.out.println("Error: Email information not set in brd.config");
+            return;
+        }
+        try {
+            GoogleMail.send(BugReportDaemon.getEmailSenderName(), BugReportDaemon.getEmailSenderPassword(), BugReportDaemon.getEmailDestination(), "Test Message from JBRD", "This is a test message.");
+        } catch (AddressException ex) {
+            Logger.getLogger(BugReportDaemon.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(BugReportDaemon.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static boolean canSendEmail() {
+        return emailDestination != null && emailSenderName != null && emailSenderPassword != null;
     }
 }
