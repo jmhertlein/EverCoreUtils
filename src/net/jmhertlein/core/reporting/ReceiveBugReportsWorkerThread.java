@@ -83,7 +83,7 @@ public class ReceiveBugReportsWorkerThread extends Thread {
                     reports.add(received);
                 }
                 //send email
-                if(!BugReportDaemon.canSendEmail())
+                if(BugReportDaemon.canSendEmail())
                     GoogleMail.send(BugReportDaemon.getEmailSenderName(), BugReportDaemon.getEmailSenderPassword(), BugReportDaemon.getEmailDestination(), "Bug Report from " + client.getInetAddress().toString(), received.toString());
             }
         } catch (IOException ex) {
