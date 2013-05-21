@@ -28,25 +28,47 @@ import sun.misc.BASE64Encoder;
  */
 public class CryptoManager {
 
-    public void storeKey(String file, Key key) {
+    /**
+     * Saves the given key to the given file.
+     * This method will NOT clobber existing files- will return false if file exists
+     * The file will be created, along with any parent directories needed.
+     * 
+     * @param file name of file to save to
+     * @param key key to save
+     * @return true if successfully written, false otherwise
+     */
+    public boolean storeKey(String file, Key key) {
         File f = new File(file);
-        if (!f.exists())
+        if (!f.exists()) {
             try {
                 f.getParentFile().mkdirs();
                 f.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else
+            return false;
         
         try (FileOutputStream fos = new FileOutputStream(file); PrintStream ps = new PrintStream(fos)) {
             ps.println(new BASE64Encoder().encode(key.getEncoded()));
+            return true;
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            return false;
         }
     }
     
-    public void storeKey(File f, Key key) {
-        storeKey(f.getPath(), key);
+    /**
+     * Saves the given key to the given file.
+     * This method will NOT clobber existing files- will return false if file exists
+     * The file will be created, along with any parent directories needed.
+     * 
+     * @param file name of file to save to
+     * @param key key to save
+     * @return true if successfully written, false otherwise
+     */
+    public boolean storeKey(File f, Key key) {
+        return storeKey(f.getPath(), key);
     }
 
     public PrivateKey loadPrivateKey(String file) {
