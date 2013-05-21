@@ -1,6 +1,5 @@
 package net.jmhertlein.core.crypto;
 
-import net.jmhertlein.core.crypto.test.CryptoTest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -126,7 +125,6 @@ public class CryptoManager {
         try {
             keyPairGen = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoTest.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 

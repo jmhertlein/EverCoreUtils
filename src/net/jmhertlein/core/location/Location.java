@@ -169,4 +169,11 @@ public class Location implements Serializable {
 
         return ret;
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ") in " + world;
+    }
+    
+    
 }
