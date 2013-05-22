@@ -26,7 +26,7 @@ import sun.misc.BASE64Encoder;
  *
  * @author joshua
  */
-public class CryptoManager {
+public abstract class Keys {
 
     /**
      * Saves the given key to the given file.
@@ -37,14 +37,14 @@ public class CryptoManager {
      * @param key key to save
      * @return true if successfully written, false otherwise
      */
-    public boolean storeKey(String file, Key key) {
+    public static boolean storeKey(String file, Key key) {
         File f = new File(file);
         if (!f.exists()) {
             try {
                 f.getParentFile().mkdirs();
                 f.createNewFile();
             } catch (IOException ex) {
-                Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else
             return false;
@@ -67,45 +67,45 @@ public class CryptoManager {
      * @param key key to save
      * @return true if successfully written, false otherwise
      */
-    public boolean storeKey(File f, Key key) {
+    public static boolean storeKey(File f, Key key) {
         return storeKey(f.getPath(), key);
     }
 
-    public PrivateKey loadPrivateKey(String file) {
+    public static PrivateKey loadPrivateKey(String file) {
         try {
             PKCS8EncodedKeySpec spec = getPKCS8KeySpec(file);
             if(spec == null)
                 return null;
             return KeyFactory.getInstance("RSA").generatePrivate(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
     }
 
-    public PublicKey loadPubKey(String file) {
+    public static PublicKey loadPubKey(String file) {
         try {
             X509EncodedKeySpec spec = getX509KeySpec(file);
             if(spec == null)
                 return null;
             return KeyFactory.getInstance("RSA").generatePublic(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
     }
 
-    public PublicKey loadPubKey(File f) {
+    public static PublicKey loadPubKey(File f) {
         return loadPubKey(f.getPath());
     }
 
-    public PrivateKey loadPrivateKey(File f) {
+    public static PrivateKey loadPrivateKey(File f) {
         return loadPrivateKey(f.getPath());
     }
 
-    private X509EncodedKeySpec getX509KeySpec(String file) {
+    private static X509EncodedKeySpec getX509KeySpec(String file) {
         byte[] decoded;
         try (Scanner scan = new Scanner(new File(file))) {
             String output = "";
@@ -123,7 +123,7 @@ public class CryptoManager {
         return new X509EncodedKeySpec(decoded);
     }
 
-    private PKCS8EncodedKeySpec getPKCS8KeySpec(String file) {
+    private static PKCS8EncodedKeySpec getPKCS8KeySpec(String file) {
         byte[] decoded;
         try (Scanner scan = new Scanner(new File(file))) {
             String output = "";
@@ -161,12 +161,30 @@ public class CryptoManager {
         try {
             keyGen = KeyGenerator.getInstance("AES");
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         } 
         
         keyGen.init(bits);
         
         return keyGen.generateKey();
+    }
+    
+    public static PublicKey getPublicKeyFromBASE64X509Encoded(String encodedKey) {
+        byte[] decoded;
+        
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            decoded = decoder.decodeBuffer(encodedKey);
+        } catch (IOException ex) {
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        try {
+            return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
