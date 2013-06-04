@@ -41,7 +41,8 @@ public abstract class Keys {
         File f = new File(file);
         if (!f.exists()) {
             try {
-                f.getParentFile().mkdirs();
+                if(f.getParentFile() != null)
+                    f.getParentFile().mkdirs();
                 f.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
@@ -68,7 +69,7 @@ public abstract class Keys {
      * @return true if successfully written, false otherwise
      */
     public static boolean storeKey(File f, Key key) {
-        return storeKey(f.getPath(), key);
+        return storeKey(f.getAbsolutePath(), key);
     }
 
     public static PrivateKey loadPrivateKey(String file) {
