@@ -7,6 +7,7 @@ package net.jmhertlein.core.location;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import org.bukkit.Server;
 
 /**
@@ -172,8 +173,19 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ", " + z + ") in " + world;
+        return String.format("(%d, %d, %d, %s)", x, y, z, world);
     }
     
-    
+    public static Location parseLocation(String s) {
+        s = s.replaceFirst("[(]", "").replaceFirst("[)]", "");
+        Scanner scan = new Scanner(s);
+        scan.useDelimiter(",");
+        
+        int x = Integer.parseInt(scan.next().trim()),
+                y = Integer.parseInt(scan.next().trim()),
+                z = Integer.parseInt(scan.next().trim());
+        
+        String world = scan.next().trim();
+        return new Location(world, x, y, z);
+    }
 }
