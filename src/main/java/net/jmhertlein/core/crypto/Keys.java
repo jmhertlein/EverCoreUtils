@@ -19,8 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -51,7 +50,7 @@ public abstract class Keys {
             return false;
         
         try (FileOutputStream fos = new FileOutputStream(file); PrintStream ps = new PrintStream(fos)) {
-            ps.println(new BASE64Encoder().encode(key.getEncoded()));
+            ps.println(Base64.encodeBase64String(key.getEncoded()));
             return true;
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -113,9 +112,8 @@ public abstract class Keys {
             while (scan.hasNextLine()) {
                 output += scan.nextLine();
             }
-
-            BASE64Decoder decoder = new BASE64Decoder();
-            decoded = decoder.decodeBuffer(output);
+            
+            decoded = Base64.decodeBase64(output);
 
         } catch (IOException ioe) {
             return null;
@@ -132,8 +130,7 @@ public abstract class Keys {
                 output += scan.nextLine();
             }
 
-            BASE64Decoder decoder = new BASE64Decoder();
-            decoded = decoder.decodeBuffer(output);
+            decoded = Base64.decodeBase64(output);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -172,15 +169,8 @@ public abstract class Keys {
     }
     
     public static PublicKey getPublicKeyFromBASE64X509Encoded(String encodedKey) {
-        byte[] decoded;
+        byte[] decoded = Base64.decodeBase64(encodedKey);
         
-        BASE64Decoder decoder = new BASE64Decoder();
-        try {
-            decoded = decoder.decodeBuffer(encodedKey);
-        } catch (IOException ex) {
-            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
         try {
             return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
@@ -190,6 +180,6 @@ public abstract class Keys {
     }
     
     public static String getBASE64ForPublicKey(PublicKey key) {
-        return new BASE64Encoder().encode(key.getEncoded());
+        return Base64.encodeBase64String(key.getEncoded());
     }
 }
