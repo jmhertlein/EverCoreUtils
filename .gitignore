@@ -5,3 +5,4 @@
 /manifest.mf
 /.gitignore
 /src/net/jmhertlein/core/crypto/test
+/target/

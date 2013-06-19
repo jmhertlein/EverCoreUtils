@@ -188,4 +188,8 @@ public abstract class Keys {
             return null;
         }
     }
+    
+    public static String getBASE64ForPublicKey(PublicKey key) {
+        return new BASE64Encoder().encode(key.getEncoded());
+    }
 }
