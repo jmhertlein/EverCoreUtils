@@ -1,9 +1,26 @@
+/*
+ * Copyright (C) 2013 Joshua Michael Hertlein <jmhertlein@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package net.jmhertlein.core.persist;
 
 import java.io.*;
 
 /**
  * A simple tool to do IO with deflated/serialized objects in files.
+ *
  * @author Josh
  */
 public class Porter {
@@ -16,6 +33,7 @@ public class Porter {
 
     /**
      * Makes a new Porter, pointed at the tarfile
+     *
      * @param tarfile the file to target
      */
     public Porter(String tarfile) {
@@ -30,7 +48,9 @@ public class Porter {
 
     /**
      * Prepares the porter for output
-     * @return true if the porter is ready, false if it is not because some exception occurred
+     *
+     * @return true if the porter is ready, false if it is not because some
+     * exception occurred
      * @see close()
      */
     public boolean primeOutput() {
@@ -47,7 +67,9 @@ public class Porter {
 
     /**
      * Prepares the porter for input
-     * @return true if the porter is ready, false if it is not because some exception occurred
+     *
+     * @return true if the porter is ready, false if it is not because some
+     * exception occurred
      * @see close()
      */
     public boolean primeInput() {
@@ -62,6 +84,7 @@ public class Porter {
 
     /**
      * Outputs/writes the Object to the file as a serialized java object
+     *
      * @param o the object to serialize
      * @return true if output was successful, false otherwise
      */
@@ -76,6 +99,7 @@ public class Porter {
 
     /**
      * Reads in the object from the file
+     *
      * @return the Object, or null if any error occurred
      */
     public Object input() {
@@ -90,8 +114,8 @@ public class Porter {
     }
 
     /**
-     * Closes the porter's open connections to the file.
-     * Should be used if primeOutput or primeInput were used.
+     * Closes the porter's open connections to the file. Should be used if
+     * primeOutput or primeInput were used.
      */
     public void close() {
         try {

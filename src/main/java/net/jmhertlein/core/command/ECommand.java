@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2013 Joshua Michael Hertlein <jmhertlein@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.jmhertlein.core.command;
 
@@ -13,6 +25,7 @@ import java.util.Scanner;
  * @author Joshua
  */
 public class ECommand {
+
     public static final String DISABLE_AUTOACTIVE = "-na",
             RECURSIVE = "-r",
             ADMIN = "-admin",
@@ -23,9 +36,9 @@ public class ECommand {
             VERY_VERY_VERBOSE = "-vvv";
     private ArrayList<String> args, flags;
 
-
     /**
      * Converts elements available in onCommand into an MCTCommand
+     *
      * @param label the first word after the slash
      * @param args all following words and args
      */
@@ -35,16 +48,18 @@ public class ECommand {
 
         this.args.add(label);
 
-        for(String s : args) {
-            if(s.startsWith("-"))
+        for (String s : args) {
+            if (s.startsWith("-")) {
                 this.flags.add(s);
-            else
+            } else {
                 this.args.add(s);
+            }
         }
     }
 
     /**
      * Parses the given command to make an MCTCommand that represents it
+     *
      * @param slashCommand
      */
     public ECommand(String slashCommand) {
@@ -58,17 +73,19 @@ public class ECommand {
 
 
         String s;
-        while(scan.hasNext()) {
+        while (scan.hasNext()) {
             s = scan.next();
-            if(s.startsWith("-"))
+            if (s.startsWith("-")) {
                 flags.add(s);
-            else
+            } else {
                 args.add(s);
+            }
         }
     }
 
     /**
      * Copies the passed args and flags into a new MCTCommand
+     *
      * @param args
      * @param flags
      */
@@ -82,6 +99,7 @@ public class ECommand {
 
     /**
      * Checks whether or not the flag is present in the command.
+     *
      * @param flag
      * @return
      */
@@ -92,13 +110,13 @@ public class ECommand {
     @Override
     public String toString() {
         String nu = "/";
-        for(String s : args) {
+        for (String s : args) {
             nu += s;
             nu += " ";
         }
 
         nu += "(";
-        for(String s : flags) {
+        for (String s : flags) {
             nu += s;
             nu += ", ";
         }
@@ -110,8 +128,9 @@ public class ECommand {
     public String getArgAtIndex(final int i) throws ArgumentCountException {
 
 
-        if(i >= args.size())
+        if (i >= args.size()) {
             throw new ArgumentCountException(i);
+        }
 
         return args.get(i);
     }
@@ -125,31 +144,35 @@ public class ECommand {
     }
 
     /**
-     * Note: Specific to MCTowns applications
-     * Assumes that the command is trying to flag a region (i.e. this.get(0).equals(some town level), get(1).equals("flag"), get(3).equals(some flag name))
-     * and turns arguments at indices in the rage [3, end) into a string array and returns it.
+     * Note: Specific to MCTowns applications Assumes that the command is trying
+     * to flag a region (i.e. this.get(0).equals(some town level),
+     * get(1).equals("flag"), get(3).equals(some flag name)) and turns arguments
+     * at indices in the rage [3, end) into a string array and returns it.
+     *
      * @return arguments for the specified flag
      */
     public String[] getFlagArguments() {
-        String[] flagArgs = new String[args.size()-3];
+        String[] flagArgs = new String[args.size() - 3];
 
-        for(int i = 3; i < args.size(); i++)
-            flagArgs[i-3] = args.get(i);
+        for (int i = 3; i < args.size(); i++) {
+            flagArgs[i - 3] = args.get(i);
+        }
 
         return flagArgs;
     }
 
     /**
-     * Concatenates and returns all the non-flag arguments with indices in the range [index, END) where END is the index of the last argument.
+     * Concatenates and returns all the non-flag arguments with indices in the
+     * range [index, END) where END is the index of the last argument.
+     *
      * @param index index to begin concatenation at
      * @return the constructed String
      */
     public String concatAfter(int index) {
-        if(index == args.size()-1)
+        if (index == args.size() - 1) {
             return args.get(index);
+        }
 
-        return args.get(index) + " " + concatAfter(index+1);
+        return args.get(index) + " " + concatAfter(index + 1);
     }
-
-
 }

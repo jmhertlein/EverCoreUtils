@@ -1,4 +1,3 @@
-
 package net.jmhertlein.core.mail;
 
 import com.sun.mail.smtp.SMTPTransport;
@@ -14,10 +13,11 @@ import javax.mail.internet.MimeMessage;
 
 /**
  *
- * @author doraemon
- * Copied from http://stackoverflow.com/questions/3649014/send-email-using-java
+ * @author doraemon Copied from
+ * http://stackoverflow.com/questions/3649014/send-email-using-java
  */
 public class GoogleMail {
+
     private GoogleMail() {
     }
 
@@ -30,7 +30,8 @@ public class GoogleMail {
      * @param title title of the message
      * @param message message to be sent
      * @throws AddressException if the email address parse failed
-     * @throws MessagingException if the connection is dead or not in the connected state or if the message is not a MimeMessage
+     * @throws MessagingException if the connection is dead or not in the
+     * connected state or if the message is not a MimeMessage
      */
     public static void send(final String username, final String password, String recipientEmail, String title, String message) throws AddressException, MessagingException {
         GoogleMail.send(username, password, recipientEmail, "", title, message);
@@ -46,7 +47,8 @@ public class GoogleMail {
      * @param title title of the message
      * @param message message to be sent
      * @throws AddressException if the email address parse failed
-     * @throws MessagingException if the connection is dead or not in the connected state or if the message is not a MimeMessage
+     * @throws MessagingException if the connection is dead or not in the
+     * connected state or if the message is not a MimeMessage
      */
     public static void send(final String username, final String password, String recipientEmail, String ccEmail, String title, String message) throws AddressException, MessagingException {
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
@@ -62,13 +64,13 @@ public class GoogleMail {
         props.setProperty("mail.smtps.auth", "true");
 
         /*
-        If set to false, the QUIT command is sent and the connection is immediately closed. If set 
-        to true (the default), causes the transport to wait for the response to the QUIT command.
+         If set to false, the QUIT command is sent and the connection is immediately closed. If set 
+         to true (the default), causes the transport to wait for the response to the QUIT command.
 
-        ref :   http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html
-                http://forum.java.sun.com/thread.jspa?threadID=5205249
-                smtpsend.java - demo program from javamail
-        */
+         ref :   http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html
+         http://forum.java.sun.com/thread.jspa?threadID=5205249
+         smtpsend.java - demo program from javamail
+         */
         props.put("mail.smtps.quitwait", "false");
 
         Session session = Session.getInstance(props, null);
@@ -88,10 +90,10 @@ public class GoogleMail {
         msg.setText(message, "utf-8");
         msg.setSentDate(new Date());
 
-        SMTPTransport t = (SMTPTransport)session.getTransport("smtps");
+        SMTPTransport t = (SMTPTransport) session.getTransport("smtps");
 
         t.connect("smtp.gmail.com", username, password);
-        t.sendMessage(msg, msg.getAllRecipients());      
+        t.sendMessage(msg, msg.getAllRecipients());
         t.close();
     }
 }
