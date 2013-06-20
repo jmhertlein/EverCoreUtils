@@ -6,3 +6,4 @@
 /.gitignore
 /src/net/jmhertlein/core/crypto/test
 /target/
+dependency-reduced-pom.xml
