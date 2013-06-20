@@ -188,7 +188,7 @@ public class Location implements Serializable {
         return String.format("(%d, %d, %d, %s)", x, y, z, world);
     }
 
-    public static Location parseLocation(String s) {
+    public static Location parseLocation(String s) throws NumberFormatException {
         s = s.replaceFirst("[(]", "").replaceFirst("[)]", "");
         Scanner scan = new Scanner(s);
         scan.useDelimiter(",");
