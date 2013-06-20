@@ -199,7 +199,7 @@ public abstract class Keys {
         }
     }
 
-    public static String getBASE64ForPublicKey(PublicKey key) {
+    public static String getBASE64ForKey(Key key) {
         return Base64.encodeBase64String(key.getEncoded());
     }
 }
