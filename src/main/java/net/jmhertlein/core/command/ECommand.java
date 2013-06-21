@@ -81,6 +81,7 @@ public class ECommand {
                 args.add(s);
             }
         }
+        scan.close();
     }
 
     /**

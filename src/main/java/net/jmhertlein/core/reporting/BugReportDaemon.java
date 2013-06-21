@@ -51,10 +51,7 @@ public class BugReportDaemon {
         done = false;
         scan = new Scanner(System.in);
 
-        try {
-            File f = new File("./brd.config");
-
-            Scanner fileScan = new Scanner(f);
+        try (Scanner fileScan = new Scanner(new File("./brd.config"))){
             if (fileScan.hasNextLine()) {
                 emailDestination = fileScan.nextLine().trim();
             }

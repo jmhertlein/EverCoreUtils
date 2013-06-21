@@ -28,7 +28,11 @@ import org.bukkit.Server;
  */
 public class Location implements Serializable {
 
-    private String world;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6832150941951045383L;
+	private String world;
     private int x, y, z;
 
     /**
@@ -198,6 +202,7 @@ public class Location implements Serializable {
                 z = Integer.parseInt(scan.next().trim());
 
         String world = scan.next().trim();
+        scan.close();
         return new Location(world, x, y, z);
     }
 }
