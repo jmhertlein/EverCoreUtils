@@ -48,7 +48,7 @@
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ftp</artifactId>
+        <artifactId>wagon-ssh</artifactId>
       </extension>
     </extensions> 
     <plugins>
@@ -65,7 +65,7 @@
   <distributionManagement>
     <repository>
       <id>ever-repo-local</id>
-      <url>ftp://192.168.1.65/home/joshua/public_html/maven</url>
+      <url>sftp://192.168.1.65:4242/home/joshua/public_html/maven</url>
     </repository>
   </distributionManagement>
   <description>Core libraries for Everdras' plugins.</description>
