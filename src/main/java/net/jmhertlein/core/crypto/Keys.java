@@ -19,7 +19,13 @@ package net.jmhertlein.core.crypto;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -33,8 +39,13 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -201,5 +212,48 @@ public abstract class Keys {
 
     public static String getBASE64ForKey(Key key) {
         return Base64.encodeBase64String(key.getEncoded());
+    }
+    
+    /**
+     * Given a secret key and an output stream, wraps the output stream first in a CipherOutputStream using the given secret key, then in an ObjectOutputStream
+     * @param key the secret key to use to encrypt data with
+     * @param os the output stream to encrypt and wrap
+     * @return an ObjectOutputStream whose data will be encrypted with the secret key
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IOException 
+     */
+    public static ObjectOutputStream getEncryptedObjectOutputStream(SecretKey key, OutputStream os) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+        Cipher outCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        outCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(getKeyBytes(key)));
+
+        return new ObjectOutputStream(new CipherOutputStream(os, outCipher));
+    }
+    
+    /**
+     * Given a secret key and an input stream, wraps the input stream first in a CipherInputStream using the given secret key, then in an ObjectInputStream
+     * @param key the secret key to use to encrypt data with
+     * @param is the input stream to encrypt and wrap
+     * @return an ObjectInputStream whose data will be encrypted with the secret key
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IOException 
+     */
+    public static ObjectInputStream getEncryptedObjectInputStream(SecretKey key, InputStream is) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+        Cipher inCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        inCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(getKeyBytes(key)));
+
+        return new ObjectInputStream(new CipherInputStream(is, inCipher));
+    }
+    
+    private static byte[] getKeyBytes(SecretKey k) {
+        byte[] key = k.getEncoded();
+        byte[] keyBytes = new byte[16];
+        System.arraycopy(key, 0, keyBytes, 0, Math.min(key.length, keyBytes.length));
+        return keyBytes;
     }
 }
