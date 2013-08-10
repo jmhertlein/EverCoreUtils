@@ -64,8 +64,8 @@
   </build>
   <distributionManagement>
     <repository>
-      <id>ever-repo-local</id>
-      <url>sftp://192.168.1.65:4242/home/joshua/public_html/maven</url>
+      <id>xpe-repo</id>
+      <url>sftp://box0.xp-e.net/home/everdras/public_html/maven</url>
     </repository>
   </distributionManagement>
   <description>Core libraries for Everdras' plugins.</description>
