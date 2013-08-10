@@ -36,12 +36,12 @@
   
   <repositories>
     <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public/</url>
+      <id>xpe-repo</id>
+      <url>http://box0.xp-e.net:8008/~everdras/maven/</url>
     </repository>
     <repository>
-      <id>ever-repo-local</id>
-      <url>http://192.168.1.65/~joshua/maven/</url>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
     </repository>
   </repositories>
   <build>
