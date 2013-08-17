@@ -47,6 +47,9 @@ public class ChanneledConnectionManager {
     private final Queue<PacketReceiveListener> listeners;
     private Thread readThread;
     private volatile boolean shutdown;
+    
+    private final Queue<Integer> unclaimedAllocatedChannels;
+    private int nextUnallocatedChannel;
 
     public ChanneledConnectionManager(final ObjectOutputStream oos, final ObjectInputStream ois) {
         this.ois = ois;
@@ -54,6 +57,8 @@ public class ChanneledConnectionManager {
         bufferMap = new ConcurrentHashMap<>();
         shutdown = false;
         listeners = new ConcurrentLinkedQueue<>();
+        this.unclaimedAllocatedChannels = new ConcurrentLinkedQueue<>();
+        nextUnallocatedChannel = 1;
     }
 
     public void startListenThread() {
@@ -123,6 +128,19 @@ public class ChanneledConnectionManager {
         return channelBuffer.remove();
     }
 
+    /**
+     * Attempts to read a received object from the main channel (channel 0)
+     *
+     * If an object has already been received on the channel, it will return
+     * immediately.
+     *
+     * However, if no object has been received yet, this method will block until
+     * one has been received.
+     *
+     * @return
+     * @throws InterruptedException if interrupted while waiting to receive an
+     * object
+     */
     public Object readObject() throws InterruptedException {
         return readObject(0);
     }
@@ -144,6 +162,13 @@ public class ChanneledConnectionManager {
         }
     }
 
+    /**
+     * Gets the buffer for the specified channel.
+     * 
+     * If the channel is not yet allocated, it will be allocated and the buffer returned.
+     * @param channel
+     * @return the buffer for the specified channel
+     */
     private synchronized Queue<Object> getChannelBuffer(int channel) {
         Queue<Object> buffer = bufferMap.get(channel);
         if (buffer == null) {
@@ -155,5 +180,28 @@ public class ChanneledConnectionManager {
     
     public void addPacketReceiveListener(PacketReceiveListener l) {
         listeners.add(l);
+    }
+    
+    /**
+     * Claims the next unused channel. Will re-use channels that have been released with releaseClaimedChannel(int) when possible
+     * @return the channel number of the next unclaimed channel
+     */
+    public synchronized int claimNextUnclaimedChannel() {
+        if(unclaimedAllocatedChannels.isEmpty()) {
+            getChannelBuffer(nextUnallocatedChannel);
+            nextUnallocatedChannel++;
+            return nextUnallocatedChannel - 1;
+        } else {
+            return unclaimedAllocatedChannels.remove();
+        }
+    }
+    
+    /**
+     * Releases the channel so that it can be reused by claimNextUnclaimedChannel()
+     * @param channel the channel to be released
+     */
+    public void releaseClaimedChannel(int channel) {
+        if(channel != 0)
+            unclaimedAllocatedChannels.add(channel);
     }
 }
