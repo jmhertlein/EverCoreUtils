@@ -18,6 +18,7 @@ package net.jmhertlein.core.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -34,7 +35,7 @@ public class ECommand {
             VERBOSE = "-v",
             VERY_VERBOSE = "-vv",
             VERY_VERY_VERBOSE = "-vvv";
-    private ArrayList<String> args, flags;
+    private List<String> args, flags;
 
     /**
      * Converts elements available in onCommand into an MCTCommand
@@ -96,6 +97,22 @@ public class ECommand {
 
         this.args.addAll(Arrays.asList(args));
         this.flags.addAll(Arrays.asList(flags));
+    }
+    
+    /**
+     * Compatibility constructor to bridge between EBCF and old handler/ECommand system
+     * @param nodes
+     * @param arguments 
+     */
+    public ECommand(List<String> nodes, String[] arguments) {
+        this.args = nodes;
+        this.flags = new ArrayList<>();
+        
+        for(String s : arguments)
+            if(s.startsWith("-"))
+                flags.add(s);
+            else
+                args.add(s);
     }
 
     /**
