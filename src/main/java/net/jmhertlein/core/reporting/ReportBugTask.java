@@ -59,6 +59,8 @@ public class ReportBugTask implements Runnable {
             log.log(Level.INFO, report.toString());
             log.log(Level.INFO, "================================================================");
         } catch (IOException ex) {
+            System.err.println(hostname + " " + port);
+            ex.printStackTrace();
             log.log(Level.INFO, "Unable to report bug, generic failure. Remote bug server is probably not running.");
             log.log(Level.INFO, "Here is the error report, please submit a ticket containing it:");
             log.log(Level.INFO, "================================================================");
