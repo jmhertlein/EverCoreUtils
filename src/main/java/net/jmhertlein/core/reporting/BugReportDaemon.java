@@ -64,8 +64,12 @@ public class BugReportDaemon {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(BugReportDaemon.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
+        
+        if(!canSendEmail()) {
+            emailDestination = System.console().readLine("Destination email address:").trim();
+            emailSenderName = System.console().readLine("Sender username:");
+            emailSenderPassword = new String(System.console().readPassword("Pass:"));
+        }
 
         start();
 

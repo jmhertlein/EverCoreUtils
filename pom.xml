@@ -83,7 +83,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <minimizeJar>true</minimizeJar>
               <relocations>
                 <relocation>
                   <pattern>javax.mail</pattern>
