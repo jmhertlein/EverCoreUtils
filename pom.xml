@@ -59,7 +59,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>net.jmhertlein.core.reporting.BugReportDaemon</mainClass>
+              <mainClass>net.jmhertlein.core.reporting.bugs.BugReportDaemon</mainClass>
             </manifest>
           </archive>
         </configuration>
