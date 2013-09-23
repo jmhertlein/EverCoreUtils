@@ -51,7 +51,7 @@ public class ReportBugTask implements Runnable {
         BugReport report = new BugReport(p, Bukkit.getServer(), e, options);
 
         try (Socket s = new Socket(hostname, port); ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());) {
-            oos.writeObject(report);
+            oos.writeObject(report.toString());
         } catch (UnknownHostException ex) {
             log.log(Level.INFO, "Unable to report bug; DNS lookup failed.");
             log.log(Level.INFO, "Here is the error report, please submit a ticket containing it:");

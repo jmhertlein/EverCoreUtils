@@ -16,11 +16,13 @@
  */
 package net.jmhertlein.core.reporting.bugs;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import org.bukkit.Server;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -30,21 +32,9 @@ import org.bukkit.plugin.Plugin;
  *
  * @author joshua
  */
-public class BugReport implements Serializable {
+public class BugReport {
 
-    private static final long serialVersionUID = 1L;
-    //CB stuff
-    private String message;
-    private StackTraceElement[] stackTrace;
-    private String ip;
-    private String options;
-    private String bukkitVersion;
-    private String pluginVersion;
-    //java stuff
-    private String jreVendor;
-    private String jreVersion;
-    //OS stuff
-    private String osName, osArch, osVersion;
+    private FileConfiguration f;
 
     /**
      * Constructs a new bug report based on provided environment variables
@@ -56,81 +46,50 @@ public class BugReport implements Serializable {
      * diagnose the problem
      */
     public BugReport(Plugin plugin, Server s, Exception e, String env) {
-        ip = s.getIp();
-        stackTrace = e.getStackTrace();
-        message = e.getMessage();
-        this.options = env;
-        bukkitVersion = s.getBukkitVersion();
-        pluginVersion = plugin.getDescription().getVersion();
+        f = new YamlConfiguration();
+        
+        f.set("plugin.name", plugin.getName());
+        f.set("plugin.version", plugin.getDescription().getVersion());
 
-        Properties p = System.getProperties();
+        f.set("server.implementation.version", plugin.getServer().getVersion());
+        f.set("server.implementation.name", plugin.getServer().getName());
+        f.set("server.bukkit.version", plugin.getServer().getBukkitVersion());
+        
+        List<String> pluginNames = new LinkedList<>();
+        for (Plugin plug : plugin.getServer().getPluginManager().getPlugins()) {
+            pluginNames.add(plug.getName());
+        }
+        f.set("server.plugins", pluginNames);
 
-        jreVendor = p.getProperty("java.vendor");
-        jreVersion = p.getProperty("java.version");
+        f.set("os.name", System.getProperty("os.name"));
+        f.set("os.arch", System.getProperty("os.arch"));
+        f.set("os.version", System.getProperty("os.version"));
+        
+        f.set("java.vendor.name", System.getProperty("java.vendor"));
+        f.set("java.version", System.getProperty("java.version"));
+        f.set("java.vendor.url", System.getProperty("java.vendor.url"));
 
-        osArch = p.getProperty("os.arch");
-        osVersion = p.getProperty("os.version");
-        osName = p.getProperty("os.name");
+        f.set("exception.environment", env);
+        f.set("exception.class", e.getClass().toString());
+        f.set("exception.message", e.getMessage());
 
+        List<String> stack = new LinkedList<>();
+        for (StackTraceElement ste : e.getStackTrace()) {
+            stack.add(ste.toString());
+        }
+        f.set("exception.stack", stack);
     }
+
+    public BugReport(String s) throws InvalidConfigurationException {
+        f = new YamlConfiguration();
+        f.loadFromString(s);
+    }
+    
+    
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("=====================Begin====================\n");
-        sb.append("IP:");
-        sb.append(ip);
-        sb.append('\n');
-
-        sb.append("CB Version:");
-        sb.append(bukkitVersion);
-        sb.append('\n');
-
-        sb.append("MCTVersion:");
-        sb.append(pluginVersion);
-        sb.append('\n');
-
-        sb.append("Config:");
-        sb.append(options.toString());
-        sb.append('\n');
-
-        sb.append("ErrMessage:");
-        sb.append(message);
-        sb.append('\n');
-
-        sb.append("JRE Vendor:");
-        sb.append(jreVendor);
-        sb.append('\n');
-
-        sb.append("JRE Version:");
-        sb.append(jreVersion);
-        sb.append('\n');
-
-        sb.append("OS Name:");
-        sb.append(osName);
-        sb.append('\n');
-
-        sb.append("OS Version:");
-        sb.append(osVersion);
-        sb.append('\n');
-
-        sb.append("OS Arch:");
-        sb.append(osArch);
-        sb.append('\n');
-
-        sb.append('\n');
-        sb.append("Call Stack:\n");
-        for (StackTraceElement e : stackTrace) {
-            sb.append(e.toString());
-            sb.append('\n');
-        }
-        sb.append('\n');
-
-        sb.append("=====================End======================\n");
-
-        return sb.toString();
-
+        return f.saveToString();
     }
 
     /**
@@ -141,17 +100,13 @@ public class BugReport implements Serializable {
      * @param ip
      */
     public void setIp(String ip) {
-        this.ip = ip;
+        f.set("server.ip", ip);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 61 * hash + Objects.hashCode(this.message);
-        hash = 61 * hash + Arrays.deepHashCode(this.stackTrace);
-        hash = 61 * hash + Objects.hashCode(this.ip);
-        hash = 61 * hash + Objects.hashCode(this.options);
-        hash = 61 * hash + Objects.hashCode(this.bukkitVersion);
+        int hash = 5;
+        hash = 41 * hash + Objects.hashCode(this.f);
         return hash;
     }
 
@@ -164,19 +119,7 @@ public class BugReport implements Serializable {
             return false;
         }
         final BugReport other = (BugReport) obj;
-        if (!Objects.equals(this.message, other.message)) {
-            return false;
-        }
-        if (!Arrays.deepEquals(this.stackTrace, other.stackTrace)) {
-            return false;
-        }
-        if (!Objects.equals(this.ip, other.ip)) {
-            return false;
-        }
-        if (!Objects.equals(this.options, other.options)) {
-            return false;
-        }
-        if (!Objects.equals(this.bukkitVersion, other.bukkitVersion)) {
+        if (!Objects.equals(this.f, other.f)) {
             return false;
         }
         return true;

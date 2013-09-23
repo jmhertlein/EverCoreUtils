@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import net.jmhertlein.core.mail.GoogleMail;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 /**
  *
@@ -81,21 +82,30 @@ public class ReceiveBugReportsWorkerThread extends Thread {
     private void receiveReport(Socket client) {
         try (ObjectInputStream ois = new ObjectInputStream(client.getInputStream())) {
             Object rawReceived = ois.readObject();
-            if (!(rawReceived instanceof BugReport)) {
-                System.err.println("Received object was not a BugReport!");
+            if (!(rawReceived instanceof String)) {
+                System.err.println("Received object was not a String!");
                 return;
             }
 
-            BugReport received = (BugReport) rawReceived;
+            String received = (String) rawReceived;
+            
+            BugReport report;
+            try {
+                report = new BugReport(received);
+            } catch (InvalidConfigurationException ex) {
+                System.err.println("Invalid YAML string!");
+                System.err.println(received);
+                return;
+            }
 
-            received.setIp(client.getInetAddress().getHostAddress());
+            report.setIp(client.getInetAddress().getHostAddress());
 
             System.out.println("Received report from " + client.getInetAddress());
-            if (reports.contains(received)) {
+            if (reports.contains(report)) {
                 System.out.println("Report was a duplicate, dropped.");
             } else {
                 synchronized (reports) {
-                    reports.add(received);
+                    reports.add(report);
                 }
                 //send email
                 if (BugReportDaemon.canSendEmail()) {

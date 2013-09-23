@@ -51,7 +51,7 @@ public class MetricsReport {
         f.set("os.name", System.getProperty("os.name"));
         f.set("os.arch", System.getProperty("os.arch"));
         f.set("os.version", System.getProperty("os.version"));
-        f.set("java.vendor", System.getProperty("java.vendor"));
+        f.set("java.vendor.name", System.getProperty("java.vendor"));
         f.set("java.version", System.getProperty("java.version"));
         f.set("java.vendor.url", System.getProperty("java.vendor.url"));
     }
@@ -66,5 +66,47 @@ public class MetricsReport {
         return f.saveToString();
     } 
     
-    //TODO: add getters for each KV pair stored in the YAML
+    public String getJVendorURL() {
+        return f.getString("java.vendor.url");
+    }
+    
+    public String getJVersion() {
+        return f.getString("java.version");
+    }
+    
+    public String getJVendor() {
+        return f.getString("java.vendor.name");
+    }
+    
+    public String getOSName() {
+        return f.getString("os.name");
+    }
+    
+    public String getOSArch() {
+        return f.getString("os.arch");
+    }
+    
+    public String getOSVersion() {
+        return f.getString("os.version");
+    }
+    
+    public String getPluginName() {
+        return f.getString("plugin.name");
+    }
+    
+    public String getPluginVersion() {
+        return f.getString("plugin.version");
+    }
+    
+    public String getBukkitVersion() {
+        return f.getString("server.bukkit.version");
+    }
+    
+    public String getImplementationName() {
+        return f.getString("server.implementation.name");
+    }
+    
+    public String getImplementationVersion() {
+        return f.getString("server.implementation.version");
+    }
 }
