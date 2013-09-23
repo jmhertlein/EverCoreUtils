@@ -119,9 +119,6 @@ public class BugReport {
             return false;
         }
         final BugReport other = (BugReport) obj;
-        if (!Objects.equals(this.f, other.f)) {
-            return false;
-        }
-        return true;
+        return this.f.toString().equals(other.f.toString());
     }
 }
