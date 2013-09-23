@@ -106,7 +106,7 @@ public class BugReport {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 41 * hash + Objects.hashCode(this.f);
+        hash = 41 * hash + Objects.hashCode(this.f.saveToString());
         return hash;
     }
 
@@ -119,6 +119,10 @@ public class BugReport {
             return false;
         }
         final BugReport other = (BugReport) obj;
-        return this.f.toString().equals(other.f.toString());
+        if (!Objects.equals(this.f.saveToString(), other.f.saveToString())) {
+            return false;
+        }
+        return true;
     }
+
 }
