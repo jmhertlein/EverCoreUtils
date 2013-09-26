@@ -18,10 +18,12 @@ package net.jmhertlein.core.reporting.bugs;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -32,11 +34,10 @@ import org.bukkit.plugin.Plugin;
 public class ReportBugTask implements Runnable {
 
     private static final Logger log = Bukkit.getLogger();
-    private Plugin p;
-    private Exception e;
-    private String options;
-    private String hostname;
-    private int port;
+    private final Plugin p;
+    private final Exception e;
+    private final String options, hostname;
+    private final int port;
 
     public ReportBugTask(Plugin p, Exception e, String options, String hostname, int port) {
         this.e = e;
@@ -50,7 +51,9 @@ public class ReportBugTask implements Runnable {
     public void run() {
         BugReport report = new BugReport(p, Bukkit.getServer(), e, options);
 
-        try (Socket s = new Socket(hostname, port); ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());) {
+        try (Socket s = new Socket(hostname, port);
+                GZIPOutputStream gzOut = new GZIPOutputStream(s.getOutputStream());
+                ObjectOutputStream oos = new ObjectOutputStream(gzOut);) {
             oos.writeObject(report.toString());
         } catch (UnknownHostException ex) {
             log.log(Level.INFO, "Unable to report bug; DNS lookup failed.");
