@@ -47,14 +47,14 @@ public class BugReport {
      */
     public BugReport(Plugin plugin, Server s, Exception e, String env) {
         f = new YamlConfiguration();
-        
+
         f.set("plugin.name", plugin.getName());
         f.set("plugin.version", plugin.getDescription().getVersion());
 
         f.set("server.implementation.version", plugin.getServer().getVersion());
         f.set("server.implementation.name", plugin.getServer().getName());
         f.set("server.bukkit.version", plugin.getServer().getBukkitVersion());
-        
+
         List<String> pluginNames = new LinkedList<>();
         for (Plugin plug : plugin.getServer().getPluginManager().getPlugins()) {
             pluginNames.add(plug.getName());
@@ -64,7 +64,7 @@ public class BugReport {
         f.set("os.name", System.getProperty("os.name"));
         f.set("os.arch", System.getProperty("os.arch"));
         f.set("os.version", System.getProperty("os.version"));
-        
+
         f.set("java.vendor.name", System.getProperty("java.vendor"));
         f.set("java.version", System.getProperty("java.version"));
         f.set("java.vendor.url", System.getProperty("java.vendor.url"));
@@ -84,8 +84,6 @@ public class BugReport {
         f = new YamlConfiguration();
         f.loadFromString(s);
     }
-    
-    
 
     @Override
     public String toString() {
@@ -125,4 +123,47 @@ public class BugReport {
         return true;
     }
 
+    public String getJVendorURL() {
+        return f.getString("java.vendor.url");
+    }
+
+    public String getJVersion() {
+        return f.getString("java.version");
+    }
+
+    public String getJVendor() {
+        return f.getString("java.vendor.name");
+    }
+
+    public String getOSName() {
+        return f.getString("os.name");
+    }
+
+    public String getOSArch() {
+        return f.getString("os.arch");
+    }
+
+    public String getOSVersion() {
+        return f.getString("os.version");
+    }
+
+    public String getPluginName() {
+        return f.getString("plugin.name");
+    }
+
+    public String getPluginVersion() {
+        return f.getString("plugin.version");
+    }
+
+    public String getBukkitVersion() {
+        return f.getString("server.bukkit.version");
+    }
+
+    public String getImplementationName() {
+        return f.getString("server.implementation.name");
+    }
+
+    public String getImplementationVersion() {
+        return f.getString("server.implementation.version");
+    }
 }
