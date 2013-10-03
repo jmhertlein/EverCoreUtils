@@ -291,4 +291,19 @@ public class Location implements Serializable {
         
         return smallestDeltaFace;
     }
+    
+    /**
+     * Calculates a yaw value that represents the opposite direction of the specified yaw.
+     * 
+     * Specifically:
+     * 1. Shift yaw up by 180 (shift range from [-180,180] to [0,360]
+     * 2. Add 180 to the yaw (to point it in the opposite direction)
+     * 3. Mod the yaw by 360 (make the addition 'wrap around' if we passed 360
+     * 4. Shift the yaw down by 180 (shift range from [0,360] back to [-180,180]
+     * @param yaw a yaw value in the range [-180,180]
+     * @return a yaw value pointing in the opposite direction of the specified yaw
+     */
+    public static float getYawInOppositeDirection(float yaw) {
+        return ((yaw + 360) % 360)-180;
+    }
 }
