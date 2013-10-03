@@ -17,9 +17,7 @@
 package net.jmhertlein.core.location;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +31,40 @@ import org.bukkit.block.BlockFace;
  */
 public class Location implements Serializable {
 
+    //it looks like yaw 180 and -180 are NORTH, 0 is SOUTH, -90 is EAST, and 90 is WEST
+    private final static Map<BlockFace, Float> DIRECTION_MAP = new HashMap<BlockFace, Float>() {
+        {
+            this.put(BlockFace.NORTH, 180f);
+            this.put(BlockFace.SOUTH, 0f);
+            this.put(BlockFace.EAST, -90f);
+            this.put(BlockFace.WEST, 90f);
+
+            this.put(BlockFace.SOUTH_EAST, -45f);
+            this.put(BlockFace.SOUTH_WEST, 45f);
+            this.put(BlockFace.NORTH_EAST, -135f);
+            this.put(BlockFace.NORTH_WEST, 135f);
+
+            this.put(BlockFace.SOUTH_SOUTH_WEST, 22f);
+            this.put(BlockFace.SOUTH_SOUTH_EAST, -22f);
+
+            this.put(BlockFace.WEST_NORTH_WEST, 112f);
+            this.put(BlockFace.WEST_SOUTH_WEST, 67f);
+
+            this.put(BlockFace.EAST_NORTH_EAST, -112f);
+            this.put(BlockFace.EAST_SOUTH_EAST, -67f);
+
+            this.put(BlockFace.NORTH_NORTH_WEST, 157f);
+            this.put(BlockFace.NORTH_NORTH_EAST, -157f);
+        }
+    };
+
     private static final long serialVersionUID = 6832150941951045383L;
     private String world;
     private int x, y, z;
     private float pitch, yaw;
-    
-    private Location() {}
+
+    private Location() {
+    }
 
     /**
      *
@@ -144,8 +170,6 @@ public class Location implements Serializable {
     public void setYaw(float yaw) {
         this.yaw = yaw;
     }
-    
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -245,65 +269,42 @@ public class Location implements Serializable {
         scan.close();
         return new Location(world, x, y, z, pitch, yaw);
     }
-    
+
     /**
-     * 
+     *
      * @param yaw
-     * @return the block face that is closest to the direction the yaw is pointing
+     * @return the block face that is closest to the direction the yaw is
+     * pointing
      */
     public static BlockFace getBlockFaceFromYaw(float yaw) {
-        //it looks like yaw 180 and -180 are NORTH, 0 is SOUTH, -90 is EAST, and 90 is WEST
-        final Map<BlockFace, Float> DIRECTION_MAP = new HashMap<>();
-        DIRECTION_MAP.put(BlockFace.NORTH, 180f);
-        DIRECTION_MAP.put(BlockFace.SOUTH, 0f);
-        DIRECTION_MAP.put(BlockFace.EAST, -90f);
-        DIRECTION_MAP.put(BlockFace.WEST, 90f);
-        
-        DIRECTION_MAP.put(BlockFace.SOUTH_EAST, -45f);
-        DIRECTION_MAP.put(BlockFace.SOUTH_WEST, 45f);
-        DIRECTION_MAP.put(BlockFace.NORTH_EAST, -135f);
-        DIRECTION_MAP.put(BlockFace.NORTH_WEST, 135f);
-        
-        DIRECTION_MAP.put(BlockFace.SOUTH_SOUTH_WEST, 22f);
-        DIRECTION_MAP.put(BlockFace.SOUTH_SOUTH_EAST, -22f);
-        
-        DIRECTION_MAP.put(BlockFace.WEST_NORTH_WEST, 112f);
-        DIRECTION_MAP.put(BlockFace.WEST_SOUTH_WEST, 67f);
-        
-        DIRECTION_MAP.put(BlockFace.EAST_NORTH_EAST, -112f);
-        DIRECTION_MAP.put(BlockFace.EAST_SOUTH_EAST, -67f);
-        
-        DIRECTION_MAP.put(BlockFace.NORTH_NORTH_WEST, 157f);
-        DIRECTION_MAP.put(BlockFace.NORTH_NORTH_EAST, -157f);
-        
-        
-        
         //initialize it with the yaw for NORTH that we didn't put in the map
         BlockFace smallestDeltaFace = BlockFace.NORTH;
         float smallestDeltaYaw = Math.abs(-180 - yaw);
-        for(Map.Entry<BlockFace, Float> entry : DIRECTION_MAP.entrySet()) {
+        for (Map.Entry<BlockFace, Float> entry : DIRECTION_MAP.entrySet()) {
             float curDelta = Math.abs(entry.getValue() - yaw);
-            if(curDelta < smallestDeltaYaw) {
+            if (curDelta < smallestDeltaYaw) {
                 smallestDeltaYaw = curDelta;
                 smallestDeltaFace = entry.getKey();
             }
         }
-        
+
         return smallestDeltaFace;
     }
-    
+
     /**
-     * Calculates a yaw value that represents the opposite direction of the specified yaw.
-     * 
-     * Specifically:
-     * 1. Shift yaw up by 180 (shift range from [-180,180] to [0,360]
-     * 2. Add 180 to the yaw (to point it in the opposite direction)
-     * 3. Mod the yaw by 360 (make the addition 'wrap around' if we passed 360
-     * 4. Shift the yaw down by 180 (shift range from [0,360] back to [-180,180]
+     * Calculates a yaw value that represents the opposite direction of the
+     * specified yaw.
+     *
+     * Specifically: 1. Shift yaw up by 180 (shift range from [-180,180] to
+     * [0,360] 2. Add 180 to the yaw (to point it in the opposite direction) 3.
+     * Mod the yaw by 360 (make the addition 'wrap around' if we passed 360 4.
+     * Shift the yaw down by 180 (shift range from [0,360] back to [-180,180]
+     *
      * @param yaw a yaw value in the range [-180,180]
-     * @return a yaw value pointing in the opposite direction of the specified yaw
+     * @return a yaw value pointing in the opposite direction of the specified
+     * yaw
      */
     public static float getYawInOppositeDirection(float yaw) {
-        return ((yaw + 360) % 360)-180;
+        return ((yaw + 360) % 360) - 180;
     }
 }
