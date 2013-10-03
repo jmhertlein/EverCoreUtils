@@ -17,10 +17,15 @@
 package net.jmhertlein.core.location;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import org.bukkit.Server;
+import org.bukkit.block.BlockFace;
 
 /**
  *
@@ -28,12 +33,12 @@ import org.bukkit.Server;
  */
 public class Location implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 6832150941951045383L;
-	private String world;
+    private static final long serialVersionUID = 6832150941951045383L;
+    private String world;
     private int x, y, z;
+    private float pitch, yaw;
+    
+    private Location() {}
 
     /**
      *
@@ -47,6 +52,17 @@ public class Location implements Serializable {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.pitch = 0;
+        this.yaw = 0;
+    }
+
+    public Location(String world, int x, int y, int z, float pitch, float yaw) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.pitch = pitch;
+        this.yaw = yaw;
     }
 
     /**
@@ -113,6 +129,24 @@ public class Location implements Serializable {
         this.z = z;
     }
 
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+    
+    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -153,7 +187,7 @@ public class Location implements Serializable {
      * @return
      */
     public static Location convertFromBukkitLocation(org.bukkit.Location loc) {
-        return new Location(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        return new Location(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getPitch(), loc.getYaw());
     }
 
     /**
@@ -163,7 +197,7 @@ public class Location implements Serializable {
      * @return
      */
     public static org.bukkit.Location convertToBukkitLocation(Server s, Location loc) {
-        return new org.bukkit.Location(s.getWorld(loc.world), loc.getX(), loc.getY(), loc.getZ());
+        return new org.bukkit.Location(s.getWorld(loc.world), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
     }
 
     public List<String> toList() {
@@ -172,24 +206,28 @@ public class Location implements Serializable {
         ret.add("" + y);
         ret.add("" + z);
         ret.add(world);
+        ret.add("" + pitch);
+        ret.add("" + yaw);
 
         return ret;
     }
 
     public static Location fromList(List<String> list) {
-        Location ret = new Location(null, 0, 0, 0);
+        Location ret = new Location();
 
         ret.x = Integer.parseInt(list.get(0));
         ret.y = Integer.parseInt(list.get(1));
         ret.z = Integer.parseInt(list.get(2));
         ret.world = list.get(3);
+        ret.pitch = list.size() >= 5 ? Float.parseFloat(list.get(4)) : 0;
+        ret.yaw = list.size() >= 6 ? Float.parseFloat(list.get(5)) : 0;
 
         return ret;
     }
 
     @Override
     public String toString() {
-        return String.format("(%d, %d, %d, %s)", x, y, z, world);
+        return String.format("(%d, %d, %d, %s, %f, %f)", x, y, z, world, pitch, yaw);
     }
 
     public static Location parseLocation(String s) throws NumberFormatException {
@@ -200,9 +238,57 @@ public class Location implements Serializable {
         int x = Integer.parseInt(scan.next().trim()),
                 y = Integer.parseInt(scan.next().trim()),
                 z = Integer.parseInt(scan.next().trim());
-
         String world = scan.next().trim();
+        float pitch = Float.parseFloat(scan.next().trim()),
+                yaw = Float.parseFloat(scan.next().trim());
+
         scan.close();
-        return new Location(world, x, y, z);
+        return new Location(world, x, y, z, pitch, yaw);
+    }
+    
+    /**
+     * 
+     * @param yaw
+     * @return the block face that is closest to the direction the yaw is pointing
+     */
+    public static BlockFace getBlockFaceFromYaw(float yaw) {
+        //it looks like yaw 180 and -180 are NORTH, 0 is SOUTH, -90 is EAST, and 90 is WEST
+        final Map<BlockFace, Float> DIRECTION_MAP = new HashMap<>();
+        DIRECTION_MAP.put(BlockFace.NORTH, 180f);
+        DIRECTION_MAP.put(BlockFace.SOUTH, 0f);
+        DIRECTION_MAP.put(BlockFace.EAST, -90f);
+        DIRECTION_MAP.put(BlockFace.WEST, 90f);
+        
+        DIRECTION_MAP.put(BlockFace.SOUTH_EAST, -45f);
+        DIRECTION_MAP.put(BlockFace.SOUTH_WEST, 45f);
+        DIRECTION_MAP.put(BlockFace.NORTH_EAST, -135f);
+        DIRECTION_MAP.put(BlockFace.NORTH_WEST, 135f);
+        
+        DIRECTION_MAP.put(BlockFace.SOUTH_SOUTH_WEST, 22f);
+        DIRECTION_MAP.put(BlockFace.SOUTH_SOUTH_EAST, -22f);
+        
+        DIRECTION_MAP.put(BlockFace.WEST_NORTH_WEST, 112f);
+        DIRECTION_MAP.put(BlockFace.WEST_SOUTH_WEST, 67f);
+        
+        DIRECTION_MAP.put(BlockFace.EAST_NORTH_EAST, -112f);
+        DIRECTION_MAP.put(BlockFace.EAST_SOUTH_EAST, -67f);
+        
+        DIRECTION_MAP.put(BlockFace.NORTH_NORTH_WEST, 157f);
+        DIRECTION_MAP.put(BlockFace.NORTH_NORTH_EAST, -157f);
+        
+        
+        
+        //initialize it with the yaw for NORTH that we didn't put in the map
+        BlockFace smallestDeltaFace = BlockFace.NORTH;
+        float smallestDeltaYaw = Math.abs(-180 - yaw);
+        for(Map.Entry<BlockFace, Float> entry : DIRECTION_MAP.entrySet()) {
+            float curDelta = Math.abs(entry.getValue() - yaw);
+            if(curDelta < smallestDeltaYaw) {
+                smallestDeltaYaw = curDelta;
+                smallestDeltaFace = entry.getKey();
+            }
+        }
+        
+        return smallestDeltaFace;
     }
 }
