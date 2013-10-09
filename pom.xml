@@ -31,8 +31,8 @@
   
   <repositories>
     <repository>
-      <id>xpe-repo</id>
-      <url>http://box0.xp-e.net:8008/~everdras/maven/</url>
+      <id>jmh-repo</id>
+      <url>http://maven.jmhertlein.net:4555/~joshua/maven/</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
@@ -81,8 +81,8 @@
   </build>
   <distributionManagement>
     <repository>
-      <id>xpe-repo</id>
-      <url>sftp://box0.xp-e.net/home/everdras/public_html/maven</url>
+      <id>jmh-repo</id>
+      <url>sftp://maven.jmhertlein.net:4242/home/joshua/public_html/maven</url>
     </repository>
   </distributionManagement>
   <description>Core libraries for Everdras' plugins.</description>
