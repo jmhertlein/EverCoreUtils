@@ -24,6 +24,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -45,6 +46,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Base64;
 
@@ -212,6 +214,24 @@ public abstract class Keys {
 
     public static String getBASE64ForKey(Key key) {
         return Base64.encodeBase64String(key.getEncoded());
+    }
+    
+    public static PublicKey getRSAPublicKeyFromEncoded(byte[] bytes) {
+        try {
+            return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public static SecretKey getAESSecretKeyFromEncoded(byte[] bytes) {
+        try {
+            return SecretKeyFactory.getInstance("AES").generateSecret(new PKCS8EncodedKeySpec(bytes));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
     /**
