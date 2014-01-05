@@ -21,20 +21,22 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.ShortBufferException;
 
 /**
  *
  * @author joshua
  */
-public class EncryptedSecretKey implements Serializable {
+public final class EncryptedSecretKey implements Serializable {
 
-    private byte[] encoded;
-    private boolean twiceEncrypted;
+    private final byte[] encoded, signature;
 
     /**
      * 
@@ -48,29 +50,31 @@ public class EncryptedSecretKey implements Serializable {
         c.init(Cipher.ENCRYPT_MODE, encryptingKey);
         
         encoded = c.doFinal(keyToEncrypt.getEncoded());
-        twiceEncrypted = false;
+        signature = null;
     }
     
     /**
      * Encrypts the secret key first with the server's private key, to ensure authenticity, then with the client's public key, to ensure privacy
      * @param keyToEncrypt the secret key to be encrypted
      * @param clientKey the client's public key
-     * @param serverKey the server's private key
+     * @param signingKey the server's private key
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
      * @throws InvalidKeyException 
      */
-    public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey clientKey, PrivateKey serverKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+    public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey clientKey, PrivateKey signingKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, ShortBufferException, SignatureException {
         Cipher c = Cipher.getInstance("RSA");
-        twiceEncrypted = true;
+        c.init(Cipher.ENCRYPT_MODE, clientKey);
         
-        c.init(Cipher.ENCRYPT_MODE, serverKey);
         encoded = c.doFinal(keyToEncrypt.getEncoded());
         
-        c.init(Cipher.ENCRYPT_MODE, clientKey);
-        encoded = c.doFinal(encoded);
+        Signature s = Signature.getInstance("SHA256withRSA");
+        s.initSign(signingKey);
+        for(byte b : encoded)
+            s.update(b);
+        signature = s.sign();
     }
 
     public byte[] getEncoded() {
@@ -85,18 +89,25 @@ public class EncryptedSecretKey implements Serializable {
         return Keys.getAESSecretKeyFromEncoded(decrypted);
     }
     
-    public SecretKey decrypt(PrivateKey clientKey, PublicKey serverKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public SecretKey decrypt(PrivateKey clientKey, PublicKey serverKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ShortBufferException, SignatureException {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.DECRYPT_MODE, clientKey);
+        
         byte[] decrypted = c.doFinal(encoded);
         
-        c.init(Cipher.DECRYPT_MODE, serverKey);
-        c.doFinal(decrypted);
+        Signature s = Signature.getInstance("SHA256withRSA");
+        s.initVerify(serverKey);
         
-        return Keys.getAESSecretKeyFromEncoded(decrypted);
+        for(byte b : encoded)
+            s.update(b);
+        
+        if(s.verify(signature))
+            return Keys.getAESSecretKeyFromEncoded(decrypted);
+        else
+            return null;
     }
-
-    public boolean isTwiceEncrypted() {
-        return twiceEncrypted;
+    
+    public boolean isSigned() {
+        return signature != null;
     }
 }

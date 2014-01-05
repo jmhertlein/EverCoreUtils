@@ -14,7 +14,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <dependencies>
+    <dependencies>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.11</version>
+    </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
@@ -32,7 +37,7 @@
   <repositories>
     <repository>
       <id>jmh-repo</id>
-      <url>http://maven.jmhertlein.net:4555/~joshua/maven/</url>
+      <url>http://maven.jmhertlein.net/~joshua/maven/</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
