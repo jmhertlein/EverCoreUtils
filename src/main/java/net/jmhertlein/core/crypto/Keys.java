@@ -48,6 +48,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -227,7 +228,7 @@ public abstract class Keys {
     
     public static SecretKey getAESSecretKeyFromEncoded(byte[] bytes) {
         try {
-            return SecretKeyFactory.getInstance("AES").generateSecret(new PKCS8EncodedKeySpec(bytes));
+            return SecretKeyFactory.getInstance("AES").generateSecret(new SecretKeySpec(bytes, "AES"));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
             return null;
