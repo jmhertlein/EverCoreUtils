@@ -34,11 +34,12 @@ import javax.crypto.SecretKey;
 public class EncryptedSecretKey implements Serializable {
 
     private byte[] encoded;
+    private boolean twiceEncrypted;
 
     /**
      * 
      * @param keyToEncrypt
-     * @param c A fully initialized Cipher to be used to encrypt the key
+     * @param encryptingKey
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException 
      */
@@ -47,6 +48,29 @@ public class EncryptedSecretKey implements Serializable {
         c.init(Cipher.ENCRYPT_MODE, encryptingKey);
         
         encoded = c.doFinal(keyToEncrypt.getEncoded());
+        twiceEncrypted = false;
+    }
+    
+    /**
+     * Encrypts the secret key first with the server's private key, to ensure authenticity, then with the client's public key, to ensure privacy
+     * @param keyToEncrypt the secret key to be encrypted
+     * @param clientKey the client's public key
+     * @param serverKey the server's private key
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException 
+     */
+    public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey clientKey, PrivateKey serverKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        Cipher c = Cipher.getInstance("RSA");
+        twiceEncrypted = true;
+        
+        c.init(Cipher.ENCRYPT_MODE, serverKey);
+        encoded = c.doFinal(keyToEncrypt.getEncoded());
+        
+        c.init(Cipher.ENCRYPT_MODE, clientKey);
+        encoded = c.doFinal(encoded);
     }
 
     public byte[] getEncoded() {
@@ -59,5 +83,20 @@ public class EncryptedSecretKey implements Serializable {
         
         byte[] decrypted = c.doFinal(encoded);
         return Keys.getAESSecretKeyFromEncoded(decrypted);
+    }
+    
+    public SecretKey decrypt(PrivateKey clientKey, PublicKey serverKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher c = Cipher.getInstance("RSA");
+        c.init(Cipher.DECRYPT_MODE, clientKey);
+        byte[] decrypted = c.doFinal(encoded);
+        
+        c.init(Cipher.DECRYPT_MODE, serverKey);
+        c.doFinal(decrypted);
+        
+        return Keys.getAESSecretKeyFromEncoded(decrypted);
+    }
+
+    public boolean isTwiceEncrypted() {
+        return twiceEncrypted;
     }
 }
