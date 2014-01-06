@@ -19,6 +19,7 @@ package net.jmhertlein.core.io;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.Callable;
 import javax.crypto.SecretKey;
 
 
@@ -57,6 +58,18 @@ public class ClientSession {
     public Socket getSocket() {
         return s;
     }
+    
+    public void setShutdownHook(Callable c) {
+        connection.setShutdownHook(c);
+    }
+    
+    public Callable getShutdownHook() {
+        return connection.getShutdownHook();
+    }
+    
+    public boolean isDisconnected() {
+        return connection.isShutdown();
+    }
 
     public SecretKey getSessionKey() {
         return sessionKey;
@@ -72,5 +85,10 @@ public class ClientSession {
     
     public void addPacketListener(PacketReceiveListener l) {
         connection.addPacketReceiveListener(l);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + sessionID + "|" + username + "]";
     }
 }

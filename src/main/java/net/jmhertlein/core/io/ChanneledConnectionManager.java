@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -50,6 +51,8 @@ public class ChanneledConnectionManager {
     
     private final Queue<Integer> unclaimedAllocatedChannels;
     private int nextUnallocatedChannel;
+    
+    private Callable shutdownHook;
 
     public ChanneledConnectionManager(final ObjectOutputStream oos, final ObjectInputStream ois) {
         this.ois = ois;
@@ -59,6 +62,10 @@ public class ChanneledConnectionManager {
         listeners = new ConcurrentLinkedQueue<>();
         this.unclaimedAllocatedChannels = new ConcurrentLinkedQueue<>();
         nextUnallocatedChannel = 1;
+    }
+
+    public boolean isShutdown() {
+        return shutdown;
     }
 
     public void startListenThread() {
@@ -160,6 +167,14 @@ public class ChanneledConnectionManager {
             ois.close();
         } catch (IOException ex) {
         }
+        
+        if(shutdownHook != null) {
+            try {
+                shutdownHook.call();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     /**
@@ -204,4 +219,14 @@ public class ChanneledConnectionManager {
         if(channel != 0)
             unclaimedAllocatedChannels.add(channel);
     }
+
+    public Callable getShutdownHook() {
+        return shutdownHook;
+    }
+
+    public void setShutdownHook(Callable shutdownHook) {
+        this.shutdownHook = shutdownHook;
+    }
+    
+    
 }
