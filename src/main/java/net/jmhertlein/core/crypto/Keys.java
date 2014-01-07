@@ -94,14 +94,19 @@ public abstract class Keys {
      * existing files- will return false if file exists The file will be
      * created, along with any parent directories needed.
      *
-     * @param file name of file to save to
+     * @param f
      * @param key key to save
      * @return true if successfully written, false otherwise
      */
     public static boolean storeKey(File f, Key key) {
         return storeKey(f.getAbsolutePath(), key);
     }
-
+    
+    /**
+     * Loads the Base64 encoded, PKCS8 formatted RSA private key from the file
+     * @param file
+     * @return 
+     */
     public static PrivateKey loadPrivateKey(String file) {
         try {
             PKCS8EncodedKeySpec spec = getPKCS8KeySpec(file);
@@ -116,6 +121,11 @@ public abstract class Keys {
         return null;
     }
 
+    /**
+     * Loads the Base64 encoded, X509 formatted RSA public key from the file
+     * @param file
+     * @return 
+     */
     public static PublicKey loadPubKey(String file) {
         try {
             X509EncodedKeySpec spec = getX509KeySpec(file);
@@ -130,10 +140,20 @@ public abstract class Keys {
         return null;
     }
 
+    /**
+     * Loads the Base64 encoded, X509 formatted RSA public key from the file
+     * @param f
+     * @return 
+     */
     public static PublicKey loadPubKey(File f) {
         return loadPubKey(f.getPath());
     }
-
+    
+    /**
+     * Loads the Base64 encoded, PKCS8 formatted RSA private key from the file
+     * @param f
+     * @return 
+     */
     public static PrivateKey loadPrivateKey(File f) {
         return loadPrivateKey(f.getPath());
     }
@@ -173,6 +193,13 @@ public abstract class Keys {
         return new PKCS8EncodedKeySpec(decoded);
     }
 
+    /**
+     * Generates a new RSA public/private key pair.
+     * 
+     * The system's default SecureRandom is used
+     * @param bits the length of the keys
+     * @return the new key pair, or null if the RSA algorithm is not supported
+     */
     public static KeyPair newRSAKeyPair(int bits) {
         KeyPairGenerator keyPairGen;
         try {
@@ -186,6 +213,11 @@ public abstract class Keys {
         return keyPairGen.generateKeyPair();
     }
 
+    /**
+     * Generates a new AES key using the system's default SecureRandom
+     * @param bits 
+     * @return the AES key, or null if the AES algorithm is not available on the system
+     */
     public static SecretKey newAESKey(int bits) {
         KeyGenerator keyGen;
 
@@ -201,6 +233,11 @@ public abstract class Keys {
         return keyGen.generateKey();
     }
 
+    /**
+     * Given a Base64-encoded, X509-formatted RSA public key, returns a PublicKey object representing it
+     * @param encodedKey
+     * @return the RSA public key, or null if the RSA algorithm is not available on the system
+     */
     public static PublicKey getPublicKeyFromBASE64X509Encoded(String encodedKey) {
         byte[] decoded = Base64.decodeBase64(encodedKey);
 
@@ -212,6 +249,11 @@ public abstract class Keys {
         }
     }
     
+    /**
+     * Given a Base64-encoded, PKCS8-formatted RSA private key, returns a PrivateKey object representing it
+     * @param encodedKey
+     * @return the RSA private key, or null if the RSA algorithm is not available on the system
+     */
     public static PrivateKey getPrivateKeyFromBASE64PKCS8Encoded(String encodedKey) {
         byte[] decoded = Base64.decodeBase64(encodedKey);
 
@@ -223,10 +265,21 @@ public abstract class Keys {
         }
     }
 
+    /**
+     * Gets a Base64 representation of the given Key
+     * 
+     * @param key
+     * @return 
+     */
     public static String getBASE64ForKey(Key key) {
         return Base64.encodeBase64String(key.getEncoded());
     }
     
+    /**
+     * Given an X509-formatted encoding of an RSA public key, returns the PublicKey object representing it
+     * @param bytes
+     * @return the RSA public key, or null if the RSA algorithm is not available on the system
+     */
     public static PublicKey getRSAPublicKeyFromEncoded(byte[] bytes) {
         try {
             return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
@@ -236,6 +289,11 @@ public abstract class Keys {
         }
     }
     
+    /**
+     * Given the encoding of an AES secret key, returns the SecretKey object representing it
+     * @param bytes
+     * @return the AES SecretKey, or null if the AES algorithm is not available on the system
+     */
     public static SecretKey getAESSecretKeyFromEncoded(byte[] bytes) {
         try {
             return SecretKeyFactory.getInstance("AES").generateSecret(new SecretKeySpec(bytes, "AES"));
