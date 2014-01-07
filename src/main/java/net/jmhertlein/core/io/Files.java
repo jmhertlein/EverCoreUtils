@@ -9,7 +9,8 @@ package net.jmhertlein.core.io;
 import java.io.File;
 
 /**
- *
+ * Common File utilities.
+ * 
  * @author joshua
  */
 public class Files {
