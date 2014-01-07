@@ -21,7 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- *
+ * A wrapper object for a CommandSender lending easy introspection into whether it's a player or an op
  * @author joshua
  */
 public class LocalSender {
@@ -61,9 +61,11 @@ public class LocalSender {
     //PERMISSIONS-RELATED METHODS
     //**************************************************************************
     /**
-     *
+     * This checks whether a player has a permission node as defined by Bukkit's default permission framework,
+     * but giving deference to the Console sender and ops.
+     * 
      * @param node
-     * @return
+     * @return true if the player is the console, an op, or has the permission node
      */
     public boolean hasExternalPermissions(String node) {
         return (!(this.getSender() instanceof Player)) || this.getSender().isOp() || this.getSender().hasPermission(node);

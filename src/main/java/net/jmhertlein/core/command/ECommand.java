@@ -24,6 +24,7 @@ import java.util.Scanner;
 /**
  *
  * @author Joshua
+ * @deprecated use the Extensible Bukkit Command Framework instead
  */
 public class ECommand {
 
