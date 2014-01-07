@@ -20,8 +20,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A logger with easy functions to log severe, warning, and info events.
  * @author Joshua
+ * @deprecated Functionality is duplicated in JavaPlugin now
  */
 public class MCLogger {
 

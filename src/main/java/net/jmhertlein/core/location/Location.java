@@ -26,7 +26,9 @@ import org.bukkit.Server;
 import org.bukkit.block.BlockFace;
 
 /**
- *
+ * A Serializable replacement for Bukkit's Location class
+ * 
+ * Only stores the block-location, though (i.e. x,y,z are ints, not floats)
  * @author joshua
  */
 public class Location implements Serializable {
