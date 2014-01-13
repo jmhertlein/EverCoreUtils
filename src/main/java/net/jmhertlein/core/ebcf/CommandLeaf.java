@@ -24,7 +24,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 /**
- *
+ * A CommandLeaf is the executable leaf of a tree of commands, and represents the actual command.
  * @author joshua
  */
 public abstract class CommandLeaf {
