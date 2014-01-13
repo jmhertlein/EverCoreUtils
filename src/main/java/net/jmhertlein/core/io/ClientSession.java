@@ -24,7 +24,9 @@ import javax.crypto.SecretKey;
 
 
 /**
- *
+ * An object representing the client in a client/server model.
+ * 
+ * Each client, upon creation, is given an integer ID that is unique to that JVM instance.
  * @author Joshua Michael Hertlein <jmhertlein@gmail.com>
  */
 public class ClientSession {
@@ -59,6 +61,10 @@ public class ClientSession {
         return s;
     }
     
+    /**
+     * Sets a function to be called when the client-side of the connection is closed.
+     * @param c 
+     */
     public void setShutdownHook(Callable c) {
         connection.setShutdownHook(c);
     }

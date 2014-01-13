@@ -24,8 +24,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- *
+ * A set of String <-> String mappings that saves to a flat file. Don't use spaces in the strings.
+ * 
  * @author Joshua Michael Hertlein <jmhertlein@gmail.com>
+ * @deprecated use the default Properties class instead, it's better
  */
 public class FlatConfiguration {
     private final Map<String, String> config;

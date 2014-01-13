@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- *
+ * A line feed-separated file holding arbitrary Strings.
+ * 
  * @author joshua
  */
 public class LFSeparatedFile {

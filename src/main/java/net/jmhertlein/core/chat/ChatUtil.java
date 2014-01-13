@@ -36,7 +36,7 @@ public class ChatUtil {
      *
      * @param strings A 2d array of strings where strings[i] is a line and
      * strings[i][j] is a word on a line
-     * @param padding How many spaces to enter between each column
+     * @param header
      * @return an array of strings, where each string in the array is a line.
      */
     public static String[] formatStringsForColumns(String[][] strings, boolean header) {

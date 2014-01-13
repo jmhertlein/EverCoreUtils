@@ -160,6 +160,9 @@ public class ChanneledConnectionManager {
         writeObject(0, data);
     }
 
+    /**
+     * Shuts down the listener thread and calls the shutdown hook.
+     */
     public void shutdown() {
         shutdown = true;
         try {

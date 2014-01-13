@@ -19,7 +19,9 @@ import java.util.Scanner;
 import net.jmhertlein.core.crypto.Keys;
 
 /**
- *
+ * An object representing a KeyPair with an associated label.
+ * 
+ * This is handy for writing a KeyPair with a label to disk (the keys are saved as Base64 encodings)
  * @author joshua
  */
 public class LabeledKeyPair extends LabeledPublicKey {
