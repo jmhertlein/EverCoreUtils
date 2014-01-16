@@ -16,11 +16,15 @@
  */
 package net.jmhertlein.core.io;
 
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.security.PublicKey;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import javax.crypto.SecretKey;
+import net.jmhertlein.core.crypto.Keys;
 
 
 /**
@@ -32,18 +36,29 @@ import javax.crypto.SecretKey;
 public class ClientSession {
     private static int nextID = 0;
     
-    private final Socket s;
-    private final SecretKey sessionKey;
-    private final String username;
-    private final int sessionID;
+    //persist these
+    private final PublicKey pubKey;
+    private String username;
     
+    //don't persist these
+    private final SecretKey sessionKey;
+    private final int sessionID;
+    private final Socket s;
     private ChanneledConnectionManager connection;
     
-    public ClientSession(Socket s, SecretKey sessionKey, String username) {
+    /**
+     * Creates a client session, with the username the public key maps to in the Properties object
+     * @param s
+     * @param k
+     * @param sessionKey
+     * @param p 
+     */
+    public ClientSession(Socket s, PublicKey k, SecretKey sessionKey, Properties p) {
         this.sessionKey = sessionKey;
-        this.username = username;
+        this.username = p.getProperty(Keys.getBASE64ForKey(k));
         this.sessionID = nextID;
         this.s = s;
+        this.pubKey = k;
         
         nextID++;
     }
@@ -96,5 +111,17 @@ public class ClientSession {
     @Override
     public String toString() {
         return "[" + sessionID + "|" + username + "]";
+    }
+
+    public PublicKey getPubKey() {
+        return pubKey;
+    }
+    
+    public void save(Properties p) {
+        p.setProperty(Keys.getBASE64ForKey(pubKey), username);
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
