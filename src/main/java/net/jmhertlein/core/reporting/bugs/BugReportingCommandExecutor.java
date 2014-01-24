@@ -50,6 +50,7 @@ public abstract class BugReportingCommandExecutor implements CommandExecutor {
      * @param cmnd
      * @param string
      * @param strings
+     *
      * @return
      */
     @Override
@@ -63,7 +64,6 @@ public abstract class BugReportingCommandExecutor implements CommandExecutor {
             cs.sendMessage(ChatColor.RED + "An internal error occurred while running the command. A bug report has been automatically sent.");
             return true;
         }
-
 
     }
 
@@ -82,6 +82,7 @@ public abstract class BugReportingCommandExecutor implements CommandExecutor {
      * @param cmnd
      * @param string
      * @param strings
+     *
      * @return
      */
     public abstract boolean executeCommand(CommandSender cs, Command cmnd, String string, String[] strings);

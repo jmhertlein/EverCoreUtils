@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.jmhertlein.core.crypto.persist;
 
 import java.io.File;
@@ -20,8 +19,9 @@ import net.jmhertlein.core.crypto.Keys;
 
 /**
  * An object representing a KeyPair with an associated label.
- * 
+ *
  * This is handy for writing a KeyPair with a label to disk (the keys are saved as Base64 encodings)
+ *
  * @author joshua
  */
 public class LabeledKeyPair extends LabeledPublicKey {
@@ -35,12 +35,12 @@ public class LabeledKeyPair extends LabeledPublicKey {
     public KeyPair getKeypair() {
         return keypair;
     }
-    
+
     @Override
     public void writeToFile(File f) throws IOException {
-        if(!f.exists())
+        if (!f.exists())
             f.createNewFile();
-        
+
         try (PrintWriter pw = new PrintWriter(f)) {
             pw.println("#Label:");
             pw.println(getLabel());
@@ -50,37 +50,37 @@ public class LabeledKeyPair extends LabeledPublicKey {
             pw.println(Keys.getBASE64ForKey(keypair.getPrivate()));
         }
     }
-    
+
     public static LabeledKeyPair readFromFile(File f) throws FileNotFoundException {
         Scanner scan = new Scanner(f);
-        
+
         scan.nextLine(); //ignore commented line in input
         String label = scan.nextLine().trim();
         scan.nextLine(); //ignore commented line in input
         PublicKey pub = Keys.getPublicKeyFromBASE64X509Encoded(scan.nextLine().trim());
         scan.nextLine(); //ignore commented line in input
         PrivateKey priv = Keys.getPrivateKeyFromBASE64PKCS8Encoded(scan.nextLine().trim());
-        
+
         return new LabeledKeyPair(label, new KeyPair(pub, priv));
     }
-    
+
     @Override
     public void writeToFile(String filename) throws IOException {
         writeToFile(new File(filename));
     }
-    
+
     public static LabeledKeyPair readFromFile(String filename) throws FileNotFoundException {
         return readFromFile(new File(filename));
     }
-    
+
     public static List<LabeledKeyPair> loadKeyPairsInDir(File dir) throws FileNotFoundException {
         List<LabeledKeyPair> ret = new LinkedList<>();
-        
-        for(File f : dir.listFiles()) {
-            if(f.getName().endsWith(".lkp"))
+
+        for (File f : dir.listFiles()) {
+            if (f.getName().endsWith(".lkp"))
                 ret.add(readFromFile(f));
         }
-        
+
         return ret;
     }
 

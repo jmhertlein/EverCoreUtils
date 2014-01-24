@@ -25,45 +25,45 @@ import java.util.Scanner;
 
 /**
  * A set of String <-> String mappings that saves to a flat file. Don't use spaces in the strings.
- * 
+ *
  * @author Joshua Michael Hertlein <jmhertlein@gmail.com>
  * @deprecated use the default Properties class instead, it's better
  */
 public class FlatConfiguration {
     private final Map<String, String> config;
-    
+
     public FlatConfiguration() {
         config = new HashMap<>();
     }
-    
+
     public FlatConfiguration(File f) throws FileNotFoundException {
         config = new HashMap<>();
         load(f);
     }
-    
+
     public String getValue(String key) {
         return config.get(key);
     }
-    
+
     public void setValue(String key, String value) {
         config.put(key, value);
     }
-    
+
     public Map<String, String> getMap() {
         return config;
     }
-    
+
     public void save(File f) throws FileNotFoundException {
         try (PrintWriter pw = new PrintWriter(f)) {
-            for(Map.Entry<String, String> entry : config.entrySet()) {
+            for (Map.Entry<String, String> entry : config.entrySet()) {
                 pw.printf("%s %s\n", entry.getKey(), entry.getValue());
             }
         }
     }
-    
+
     public final void load(File f) throws FileNotFoundException {
         try (Scanner fileScan = new Scanner(f)) {
-            while(fileScan.hasNextLine()) {
+            while (fileScan.hasNextLine()) {
                 String[] split = fileScan.nextLine().split(" ", 2);
                 config.put(split[0], split[1]);
             }

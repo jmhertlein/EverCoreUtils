@@ -22,9 +22,10 @@ package net.jmhertlein.core.io;
  */
 public interface PacketReceiveListener {
     /**
-     * 
+     *
      * @param data
      * @param channel
+     *
      * @return whether or not to add the received object to the channel's buffer
      */
     public boolean onPacketReceive(Object data, int channel);

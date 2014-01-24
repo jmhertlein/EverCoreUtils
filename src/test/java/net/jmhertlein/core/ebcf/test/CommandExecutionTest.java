@@ -20,10 +20,10 @@ import org.junit.Before;
  * @author joshua
  */
 public class CommandExecutionTest {
-    
+
     @Test
     public void testCommandExecution() {
-        final boolean[] b = new boolean[] {false};
+        final boolean[] b = new boolean[]{false};
         TreeCommandExecutor e = new TreeCommandExecutor();
         CommandLeaf leaf = new CommandLeaf("testplugin hello") {
             @Override
@@ -36,11 +36,11 @@ public class CommandExecutionTest {
                 b[0] = true;
             }
         };
-        
+
         e.add(leaf);
-        
-        e.onCommand(new MockCommandSender(), null, "testplugin", new String[] {"hello"});
-        
+
+        e.onCommand(new MockCommandSender(), null, "testplugin", new String[]{"hello"});
+
         assertTrue(b[0]);
     }
 }

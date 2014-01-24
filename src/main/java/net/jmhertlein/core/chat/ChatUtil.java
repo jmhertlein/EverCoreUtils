@@ -35,8 +35,9 @@ public class ChatUtil {
      * Formats the given 2d array of strings with respect to columns.
      *
      * @param strings A 2d array of strings where strings[i] is a line and
-     * strings[i][j] is a word on a line
+     *                strings[i][j] is a word on a line
      * @param header
+     *
      * @return an array of strings, where each string in the array is a line.
      */
     public static String[] formatStringsForColumns(String[][] strings, boolean header) {
@@ -82,19 +83,19 @@ public class ChatUtil {
      * Gets the longest string in the specified column.
      *
      * @param strings A 2d array of strings where strings[i] is a line and
-     * strings[i][j] is a word on a line
-     * @param column the index of the column to check
+     *                strings[i][j] is a word on a line
+     * @param column  the index of the column to check
+     *
      * @see ChatUtil#formatStringsForColumns(java.lang.String[][], int)
      * @return the length of the longest string in the column, 0 if there were
-     * only empty strings, or -1 if the array was empty
+     *         only empty strings, or -1 if the array was empty
      */
     private static int getLongestStringInColumn(String[][] strings, int column) {
         int longest = strings[0][column].length();
 
         for (int i = 0; i < strings.length; i++) {
-            if (strings[i][column].length() > longest) {
+            if (strings[i][column].length() > longest)
                 longest = strings[i][column].length();
-            }
         }
 
         return longest;

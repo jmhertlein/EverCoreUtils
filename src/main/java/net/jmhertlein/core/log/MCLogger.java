@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 /**
  * A logger with easy functions to log severe, warning, and info events.
+ *
  * @author Joshua
  * @deprecated Functionality is duplicated in JavaPlugin now
  */
@@ -45,9 +46,8 @@ public class MCLogger {
     }
 
     public void logAssert(boolean bool, String desc) {
-        if (!bool) {
+        if (!bool)
             logDebug("WARNING: ASSERTION FAILED: " + desc);
-        }
     }
 
     public void logSevere(String msg) {
@@ -59,8 +59,7 @@ public class MCLogger {
     }
 
     public void logDebug(String msg) {
-        if (DEBUGGING) {
+        if (DEBUGGING)
             logInfo("[DEBUG]:" + msg);
-        }
     }
 }

@@ -20,26 +20,26 @@ public class InvalidCommandTest {
     @Test
     public void testInvalidCommand() {
         TreeCommandExecutor e = new TreeCommandExecutor();
-        final boolean[] passed = new boolean[] {false};
-        
+        final boolean[] passed = new boolean[]{false};
+
         CommandLeaf testLeaf = new CommandLeaf("testplugin hello") {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 passed[0] = true;
             }
-            
+
             @Override
             public String getMissingRequiredArgsHelpMessage() {
                 return "Error: Not enough args";
             }
         };
-        
+
         e.add(testLeaf);
-        
+
         assertFalse(e.onCommand(new MockCommandSender(), null, "testnotplugin", new String[0]));
         assertFalse(passed[0]);
         assertTrue(e.onCommand(new MockCommandSender(), null, "testplugin", new String[]{"nope"}));
         assertFalse(passed[0]);
     }
-    
+
 }

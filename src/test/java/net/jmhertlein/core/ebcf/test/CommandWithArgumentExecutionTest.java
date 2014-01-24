@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class CommandWithArgumentExecutionTest {
     @Test
     public void testCommandWithArgsTest() {
-        final boolean[] passed = new boolean[] {false};
+        final boolean[] passed = new boolean[]{false};
         CommandLeaf leaf = new CommandLeaf("test method3 ! ! ?") {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
@@ -33,13 +33,13 @@ public class CommandWithArgumentExecutionTest {
                 return "Error: not enough args. Need " + getNumRequiredArgs() + ".";
             }
         };
-        
+
         TreeCommandExecutor e = new TreeCommandExecutor();
         e.add(leaf);
-        
-        e.onCommand(new MockCommandSender(), null, "test", new String[] {"method3", "arg1", "arg2", "arg3"});
-        
+
+        e.onCommand(new MockCommandSender(), null, "test", new String[]{"method3", "arg1", "arg2", "arg3"});
+
         assertTrue(passed[0]);
     }
-    
+
 }

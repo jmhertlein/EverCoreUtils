@@ -29,18 +29,18 @@ public class CommandPassedCorrectArgumentsTest {
                 assertTrue(args[2].equals("arg3opt"));
                 assertTrue(args[3].equals("arg4opt"));
             }
-            
+
             @Override
             public String getMissingRequiredArgsHelpMessage() {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
-        
+
         assertTrue(leaf.getNumRequiredArgs() == 2);
         assertTrue(leaf.getNumOptionalArgs() == 2);
         e.add(leaf);
-        
-        e.onCommand(new MockCommandSender(), null, "test", new String[] {"method", "arg1", "arg2", "arg3opt", "arg4opt"});
-        
+
+        e.onCommand(new MockCommandSender(), null, "test", new String[]{"method", "arg1", "arg2", "arg3opt", "arg4opt"});
+
     }
 }

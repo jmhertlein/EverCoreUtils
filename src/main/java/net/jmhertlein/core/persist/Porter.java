@@ -50,7 +50,7 @@ public class Porter {
      * Prepares the porter for output
      *
      * @return true if the porter is ready, false if it is not because some
-     * exception occurred
+     *         exception occurred
      * @see close()
      */
     public boolean primeOutput() {
@@ -69,7 +69,7 @@ public class Porter {
      * Prepares the porter for input
      *
      * @return true if the porter is ready, false if it is not because some
-     * exception occurred
+     *         exception occurred
      * @see close()
      */
     public boolean primeInput() {
@@ -86,6 +86,7 @@ public class Porter {
      * Outputs/writes the Object to the file as a serialized java object
      *
      * @param o the object to serialize
+     *
      * @return true if output was successful, false otherwise
      */
     public boolean output(Object o) {
@@ -119,21 +120,17 @@ public class Porter {
      */
     public void close() {
         try {
-            if (oos != null) {
+            if (oos != null)
                 oos.close();
-            }
 
-            if (ois != null) {
+            if (ois != null)
                 ois.close();
-            }
 
-            if (fos != null) {
+            if (fos != null)
                 fos.close();
-            }
 
-            if (fis != null) {
+            if (fis != null)
                 fis.close();
-            }
         } catch (IOException ex) {
         }
 

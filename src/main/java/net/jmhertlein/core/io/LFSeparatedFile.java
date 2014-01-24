@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.jmhertlein.core.io;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.util.Scanner;
 
 /**
  * A line feed-separated file holding arbitrary Strings.
- * 
+ *
  * @author joshua
  */
 public class LFSeparatedFile {
@@ -33,35 +32,35 @@ public class LFSeparatedFile {
     public void setLines(List<String> lines) {
         this.lines = lines;
     }
-    
+
     public void addLine(String line) {
         lines.add(line);
     }
-    
+
     public void writeToFile(File f) throws IOException {
         writeLinesToFile(lines, f);
     }
-    
+
     public static LFSeparatedFile readFromFile(File f) throws FileNotFoundException {
         return new LFSeparatedFile(getLinesFromFile(f));
     }
-    
+
     public static List<String> getLinesFromFile(File f) throws FileNotFoundException {
         List<String> lines;
         try (Scanner scan = new Scanner(f)) {
             lines = new ArrayList<>();
-            while(scan.hasNextLine())
+            while (scan.hasNextLine())
                 lines.add(scan.nextLine());
         }
         return lines;
     }
-    
+
     public static void writeLinesToFile(List<String> lines, File f) throws IOException {
-        if(!f.exists())
+        if (!f.exists())
             f.createNewFile();
-        
+
         try (PrintWriter pw = new PrintWriter(f)) {
-            for(String l : lines) 
+            for (String l : lines)
                 pw.println(l);
         }
     }

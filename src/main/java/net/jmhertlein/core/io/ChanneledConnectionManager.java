@@ -48,10 +48,10 @@ public class ChanneledConnectionManager {
     private final Queue<PacketReceiveListener> listeners;
     private Thread readThread;
     private volatile boolean shutdown;
-    
+
     private final Queue<Integer> unclaimedAllocatedChannels;
     private int nextUnallocatedChannel;
-    
+
     private Callable shutdownHook;
 
     public ChanneledConnectionManager(final ObjectOutputStream oos, final ObjectInputStream ois) {
@@ -76,28 +76,28 @@ public class ChanneledConnectionManager {
                     ChannelPacket p;
                     try {
                         p = (ChannelPacket) ois.readObject();
-                    } catch(EOFException eofe) {
+                    } catch (EOFException eofe) {
                         System.out.println("Received EOF, shutting down listener thread.");
                         shutdown();
                         continue;
                     } catch (IOException | ClassNotFoundException ex) {
-                        if(shutdown)
+                        if (shutdown)
                             System.out.println("Read aborted due to shutdown.");
                         else
                             Logger.getLogger(ChanneledConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
-                        
+
                         continue;
                     }
-                    
+
                     boolean addToBuffer = true;
-                    for(PacketReceiveListener l : listeners) {
+                    for (PacketReceiveListener l : listeners) {
                         addToBuffer &= l.onPacketReceive(p.getData(), p.getChannel());
                     }
-                    if(!addToBuffer)
+                    if (!addToBuffer)
                         continue;
-                    
+
                     Queue<Object> buffer = getChannelBuffer(p.getChannel());
-                    
+
                     buffer.add(p.getData());
                     synchronized (buffer) {
                         buffer.notifyAll();
@@ -119,18 +119,18 @@ public class ChanneledConnectionManager {
      * one has been received.
      *
      * @param channel
+     *
      * @return
      * @throws InterruptedException if interrupted while waiting to receive an
-     * object
+     *                              object
      */
     public Object readObject(int channel) throws InterruptedException {
         Queue<Object> channelBuffer = getChannelBuffer(channel);
 
-        if (channelBuffer.isEmpty()) {
+        if (channelBuffer.isEmpty())
             synchronized (channelBuffer) {
                 channelBuffer.wait();
             }
-        }
 
         return channelBuffer.remove();
     }
@@ -146,7 +146,7 @@ public class ChanneledConnectionManager {
      *
      * @return
      * @throws InterruptedException if interrupted while waiting to receive an
-     * object
+     *                              object
      */
     public Object readObject() throws InterruptedException {
         return readObject(0);
@@ -170,21 +170,22 @@ public class ChanneledConnectionManager {
             ois.close();
         } catch (IOException ex) {
         }
-        
-        if(shutdownHook != null) {
+
+        if (shutdownHook != null)
             try {
                 shutdownHook.call();
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-        }
     }
 
     /**
      * Gets the buffer for the specified channel.
-     * 
+     *
      * If the channel is not yet allocated, it will be allocated and the buffer returned.
+     *
      * @param channel
+     *
      * @return the buffer for the specified channel
      */
     private synchronized Queue<Object> getChannelBuffer(int channel) {
@@ -195,31 +196,32 @@ public class ChanneledConnectionManager {
         }
         return buffer;
     }
-    
+
     public void addPacketReceiveListener(PacketReceiveListener l) {
         listeners.add(l);
     }
-    
+
     /**
      * Claims the next unused channel. Will re-use channels that have been released with releaseClaimedChannel(int) when possible
+     *
      * @return the channel number of the next unclaimed channel
      */
     public synchronized int claimNextUnclaimedChannel() {
-        if(unclaimedAllocatedChannels.isEmpty()) {
+        if (unclaimedAllocatedChannels.isEmpty()) {
             getChannelBuffer(nextUnallocatedChannel);
             nextUnallocatedChannel++;
             return nextUnallocatedChannel - 1;
-        } else {
+        } else
             return unclaimedAllocatedChannels.remove();
-        }
     }
-    
+
     /**
      * Releases the channel so that it can be reused by claimNextUnclaimedChannel()
+     *
      * @param channel the channel to be released
      */
     public void releaseClaimedChannel(int channel) {
-        if(channel != 0)
+        if (channel != 0)
             unclaimedAllocatedChannels.add(channel);
     }
 
@@ -230,6 +232,5 @@ public class ChanneledConnectionManager {
     public void setShutdownHook(Callable shutdownHook) {
         this.shutdownHook = shutdownHook;
     }
-    
-    
+
 }

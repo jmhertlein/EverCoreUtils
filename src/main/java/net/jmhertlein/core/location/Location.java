@@ -27,8 +27,9 @@ import org.bukkit.block.BlockFace;
 
 /**
  * A Serializable replacement for Bukkit's Location class
- * 
+ *
  * Only stores the block-location, though (i.e. x,y,z are ints, not floats)
+ *
  * @author joshua
  */
 public class Location implements Serializable {
@@ -175,25 +176,19 @@ public class Location implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         final Location other = (Location) obj;
-        if ((this.world == null) ? (other.world != null) : !this.world.equals(other.world)) {
+        if ((this.world == null) ? (other.world != null) : !this.world.equals(other.world))
             return false;
-        }
-        if (this.x != other.x) {
+        if (this.x != other.x)
             return false;
-        }
-        if (this.y != other.y) {
+        if (this.y != other.y)
             return false;
-        }
-        if (this.z != other.z) {
+        if (this.z != other.z)
             return false;
-        }
         return true;
     }
 
@@ -210,6 +205,7 @@ public class Location implements Serializable {
     /**
      *
      * @param loc
+     *
      * @return
      */
     public static Location convertFromBukkitLocation(org.bukkit.Location loc) {
@@ -220,6 +216,7 @@ public class Location implements Serializable {
      *
      * @param s
      * @param loc
+     *
      * @return
      */
     public static org.bukkit.Location convertToBukkitLocation(Server s, Location loc) {
@@ -275,8 +272,9 @@ public class Location implements Serializable {
     /**
      *
      * @param yaw
+     *
      * @return the block face that is closest to the direction the yaw is
-     * pointing
+     *         pointing
      */
     public static BlockFace getBlockFaceFromYaw(float yaw) {
         //initialize it with the yaw for NORTH that we didn't put in the map
@@ -303,8 +301,9 @@ public class Location implements Serializable {
      * Shift the yaw down by 180 (shift range from [0,360] back to [-180,180]
      *
      * @param yaw a yaw value in the range [-180,180]
+     *
      * @return a yaw value pointing in the opposite direction of the specified
-     * yaw
+     *         yaw
      */
     public static float getYawInOppositeDirection(float yaw) {
         return ((yaw + 360) % 360) - 180;

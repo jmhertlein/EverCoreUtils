@@ -42,7 +42,7 @@ public class ECommand {
      * Converts elements available in onCommand into an MCTCommand
      *
      * @param label the first word after the slash
-     * @param args all following words and args
+     * @param args  all following words and args
      */
     public ECommand(String label, String[] args) {
         this.args = new ArrayList<>();
@@ -51,11 +51,10 @@ public class ECommand {
         this.args.add(label);
 
         for (String s : args) {
-            if (s.startsWith("-")) {
+            if (s.startsWith("-"))
                 this.flags.add(s);
-            } else {
+            else
                 this.args.add(s);
-            }
         }
     }
 
@@ -72,16 +71,13 @@ public class ECommand {
 
         Scanner scan = new Scanner(slashCommand);
 
-
-
         String s;
         while (scan.hasNext()) {
             s = scan.next();
-            if (s.startsWith("-")) {
+            if (s.startsWith("-"))
                 flags.add(s);
-            } else {
+            else
                 args.add(s);
-            }
         }
         scan.close();
     }
@@ -99,18 +95,19 @@ public class ECommand {
         this.args.addAll(Arrays.asList(args));
         this.flags.addAll(Arrays.asList(flags));
     }
-    
+
     /**
      * Compatibility constructor to bridge between EBCF and old handler/ECommand system
+     *
      * @param nodes
-     * @param arguments 
+     * @param arguments
      */
     public ECommand(List<String> nodes, String[] arguments) {
         this.args = nodes;
         this.flags = new ArrayList<>();
-        
-        for(String s : arguments)
-            if(s.startsWith("-"))
+
+        for (String s : arguments)
+            if (s.startsWith("-"))
                 flags.add(s);
             else
                 args.add(s);
@@ -120,6 +117,7 @@ public class ECommand {
      * Checks whether or not the flag is present in the command.
      *
      * @param flag
+     *
      * @return
      */
     public boolean hasFlag(String flag) {
@@ -146,10 +144,8 @@ public class ECommand {
 
     public String getArgAtIndex(final int i) throws ArgumentCountException {
 
-
-        if (i >= args.size()) {
+        if (i >= args.size())
             throw new ArgumentCountException(i);
-        }
 
         return args.get(i);
     }
@@ -185,12 +181,12 @@ public class ECommand {
      * range [index, END) where END is the index of the last argument.
      *
      * @param index index to begin concatenation at
+     *
      * @return the constructed String
      */
     public String concatAfter(int index) {
-        if (index == args.size() - 1) {
+        if (index == args.size() - 1)
             return args.get(index);
-        }
 
         return args.get(index) + " " + concatAfter(index + 1);
     }

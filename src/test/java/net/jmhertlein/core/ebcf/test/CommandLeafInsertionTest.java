@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  * @author joshua
  */
 public class CommandLeafInsertionTest {
-    
+
     @Test
     public void testCommandInsertion() {
         TreeCommandExecutor e = new TreeCommandExecutor();
@@ -26,16 +26,16 @@ public class CommandLeafInsertionTest {
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("Hello World");
             }
-            
+
             @Override
             public String getMissingRequiredArgsHelpMessage() {
                 return "Error: Not enough args";
             }
         };
-        
+
         e.add(testLeaf);
-        
+
         assertTrue(e.getLeaves().contains(testLeaf));
     }
-    
+
 }

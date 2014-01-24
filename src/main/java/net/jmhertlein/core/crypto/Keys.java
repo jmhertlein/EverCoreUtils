@@ -62,23 +62,22 @@ public abstract class Keys {
      * created, along with any parent directories needed.
      *
      * @param file name of file to save to
-     * @param key key to save
+     * @param key  key to save
+     *
      * @return true if successfully written, false otherwise
      */
     public static boolean storeKey(String file, Key key) {
         File f = new File(file);
-        if (!f.exists()) {
+        if (!f.exists())
             try {
-                if (f.getParentFile() != null) {
+                if (f.getParentFile() != null)
                     f.getParentFile().mkdirs();
-                }
                 f.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
+        else
             return false;
-        }
 
         try (FileOutputStream fos = new FileOutputStream(file); PrintStream ps = new PrintStream(fos)) {
             ps.println(Base64.encodeBase64String(key.getEncoded()));
@@ -96,23 +95,25 @@ public abstract class Keys {
      *
      * @param f
      * @param key key to save
+     *
      * @return true if successfully written, false otherwise
      */
     public static boolean storeKey(File f, Key key) {
         return storeKey(f.getAbsolutePath(), key);
     }
-    
+
     /**
      * Loads the Base64 encoded, PKCS8 formatted RSA private key from the file
+     *
      * @param file
-     * @return 
+     *
+     * @return
      */
     public static PrivateKey loadPrivateKey(String file) {
         try {
             PKCS8EncodedKeySpec spec = getPKCS8KeySpec(file);
-            if (spec == null) {
+            if (spec == null)
                 return null;
-            }
             return KeyFactory.getInstance("RSA").generatePrivate(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,15 +124,16 @@ public abstract class Keys {
 
     /**
      * Loads the Base64 encoded, X509 formatted RSA public key from the file
+     *
      * @param file
-     * @return 
+     *
+     * @return
      */
     public static PublicKey loadPubKey(String file) {
         try {
             X509EncodedKeySpec spec = getX509KeySpec(file);
-            if (spec == null) {
+            if (spec == null)
                 return null;
-            }
             return KeyFactory.getInstance("RSA").generatePublic(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
@@ -142,17 +144,21 @@ public abstract class Keys {
 
     /**
      * Loads the Base64 encoded, X509 formatted RSA public key from the file
+     *
      * @param f
-     * @return 
+     *
+     * @return
      */
     public static PublicKey loadPubKey(File f) {
         return loadPubKey(f.getPath());
     }
-    
+
     /**
      * Loads the Base64 encoded, PKCS8 formatted RSA private key from the file
+     *
      * @param f
-     * @return 
+     *
+     * @return
      */
     public static PrivateKey loadPrivateKey(File f) {
         return loadPrivateKey(f.getPath());
@@ -195,9 +201,11 @@ public abstract class Keys {
 
     /**
      * Generates a new RSA public/private key pair.
-     * 
+     *
      * The system's default SecureRandom is used
+     *
      * @param bits the length of the keys
+     *
      * @return the new key pair, or null if the RSA algorithm is not supported
      */
     public static KeyPair newRSAKeyPair(int bits) {
@@ -215,7 +223,9 @@ public abstract class Keys {
 
     /**
      * Generates a new AES key using the system's default SecureRandom
-     * @param bits 
+     *
+     * @param bits
+     *
      * @return the AES key, or null if the AES algorithm is not available on the system
      */
     public static SecretKey newAESKey(int bits) {
@@ -235,7 +245,9 @@ public abstract class Keys {
 
     /**
      * Given a Base64-encoded, X509-formatted RSA public key, returns a PublicKey object representing it
+     *
      * @param encodedKey
+     *
      * @return the RSA public key, or null if the RSA algorithm is not available on the system
      */
     public static PublicKey getPublicKeyFromBASE64X509Encoded(String encodedKey) {
@@ -248,10 +260,12 @@ public abstract class Keys {
             return null;
         }
     }
-    
+
     /**
      * Given a Base64-encoded, PKCS8-formatted RSA private key, returns a PrivateKey object representing it
+     *
      * @param encodedKey
+     *
      * @return the RSA private key, or null if the RSA algorithm is not available on the system
      */
     public static PrivateKey getPrivateKeyFromBASE64PKCS8Encoded(String encodedKey) {
@@ -267,17 +281,20 @@ public abstract class Keys {
 
     /**
      * Gets a Base64 representation of the given Key
-     * 
+     *
      * @param key
-     * @return 
+     *
+     * @return
      */
     public static String getBASE64ForKey(Key key) {
         return Base64.encodeBase64String(key.getEncoded());
     }
-    
+
     /**
      * Given an X509-formatted encoding of an RSA public key, returns the PublicKey object representing it
+     *
      * @param bytes
+     *
      * @return the RSA public key, or null if the RSA algorithm is not available on the system
      */
     public static PublicKey getRSAPublicKeyFromEncoded(byte[] bytes) {
@@ -288,10 +305,12 @@ public abstract class Keys {
             return null;
         }
     }
-    
+
     /**
      * Given the encoding of an AES secret key, returns the SecretKey object representing it
+     *
      * @param bytes
+     *
      * @return the AES SecretKey, or null if the AES algorithm is not available on the system
      */
     public static SecretKey getAESSecretKeyFromEncoded(byte[] bytes) {
@@ -302,17 +321,19 @@ public abstract class Keys {
             return null;
         }
     }
-    
+
     /**
      * Given a secret key and an output stream, wraps the output stream first in a CipherOutputStream using the given secret key, then in an ObjectOutputStream
+     *
      * @param key the secret key to use to encrypt data with
-     * @param os the output stream to encrypt and wrap
+     * @param os  the output stream to encrypt and wrap
+     *
      * @return an ObjectOutputStream whose data will be encrypted with the secret key
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
      * @throws InvalidKeyException
      * @throws InvalidAlgorithmParameterException
-     * @throws IOException 
+     * @throws IOException
      */
     public static ObjectOutputStream getEncryptedObjectOutputStream(SecretKey key, OutputStream os) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         Cipher outCipher = Cipher.getInstance("AES/CFB8/NoPadding");
@@ -320,17 +341,19 @@ public abstract class Keys {
 
         return new ObjectOutputStream(new CipherOutputStream(os, outCipher));
     }
-    
+
     /**
      * Given a secret key and an input stream, wraps the input stream first in a CipherInputStream using the given secret key, then in an ObjectInputStream
+     *
      * @param key the secret key to use to encrypt data with
-     * @param is the input stream to encrypt and wrap
+     * @param is  the input stream to encrypt and wrap
+     *
      * @return an ObjectInputStream whose data will be encrypted with the secret key
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
      * @throws InvalidKeyException
      * @throws InvalidAlgorithmParameterException
-     * @throws IOException 
+     * @throws IOException
      */
     public static ObjectInputStream getEncryptedObjectInputStream(SecretKey key, InputStream is) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         Cipher inCipher = Cipher.getInstance("AES/CFB8/NoPadding");
@@ -338,7 +361,7 @@ public abstract class Keys {
 
         return new ObjectInputStream(new CipherInputStream(is, inCipher));
     }
-    
+
     private static byte[] getKeyBytes(SecretKey k) {
         byte[] key = k.getEncoded();
         byte[] keyBytes = new byte[16];

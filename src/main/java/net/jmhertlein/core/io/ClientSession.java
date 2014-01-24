@@ -16,7 +16,6 @@
  */
 package net.jmhertlein.core.io;
 
-import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -26,32 +25,33 @@ import java.util.concurrent.Callable;
 import javax.crypto.SecretKey;
 import net.jmhertlein.core.crypto.Keys;
 
-
 /**
  * An object representing the client in a client/server model.
- * 
+ *
  * Each client, upon creation, is given an integer ID that is unique to that JVM instance.
+ *
  * @author Joshua Michael Hertlein <jmhertlein@gmail.com>
  */
 public class ClientSession {
     private static int nextID = 0;
-    
+
     //persist these
     private final PublicKey pubKey;
     private String username;
-    
+
     //don't persist these
     private final SecretKey sessionKey;
     private final int sessionID;
     private final Socket s;
     private ChanneledConnectionManager connection;
-    
+
     /**
      * Creates a client session, with the username the public key maps to in the Properties object
+     *
      * @param s
      * @param k
      * @param sessionKey
-     * @param p 
+     * @param p
      */
     public ClientSession(Socket s, PublicKey k, SecretKey sessionKey, Properties p) {
         this.sessionKey = sessionKey;
@@ -59,10 +59,10 @@ public class ClientSession {
         this.sessionID = nextID;
         this.s = s;
         this.pubKey = k;
-        
+
         nextID++;
     }
-    
+
     public void initChannels(ObjectOutputStream oos, ObjectInputStream ois) {
         connection = new ChanneledConnectionManager(oos, ois);
         connection.startListenThread();
@@ -75,19 +75,20 @@ public class ClientSession {
     public Socket getSocket() {
         return s;
     }
-    
+
     /**
      * Sets a function to be called when the client-side of the connection is closed.
-     * @param c 
+     *
+     * @param c
      */
     public void setShutdownHook(Callable c) {
         connection.setShutdownHook(c);
     }
-    
+
     public Callable getShutdownHook() {
         return connection.getShutdownHook();
     }
-    
+
     public boolean isDisconnected() {
         return connection.isShutdown();
     }
@@ -103,7 +104,7 @@ public class ClientSession {
     public int getSessionID() {
         return sessionID;
     }
-    
+
     public void addPacketListener(PacketReceiveListener l) {
         connection.addPacketReceiveListener(l);
     }
@@ -116,7 +117,7 @@ public class ClientSession {
     public PublicKey getPubKey() {
         return pubKey;
     }
-    
+
     public void save(Properties p) {
         p.setProperty(Keys.getBASE64ForKey(pubKey), username);
     }

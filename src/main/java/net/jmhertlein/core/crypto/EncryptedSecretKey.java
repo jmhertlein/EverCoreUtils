@@ -32,9 +32,9 @@ import javax.crypto.ShortBufferException;
 
 /**
  * An object representing an AES secret key that has been encrypted by an RSA public key and optionally cryptographically signed by an RSA private key.
- * 
+ *
  * It is Serializable, and safe to write to streams and files.
- * 
+ *
  * @author joshua
  */
 public final class EncryptedSecretKey implements Serializable {
@@ -43,81 +43,86 @@ public final class EncryptedSecretKey implements Serializable {
 
     /**
      * Constructs an object representing an encrypted AES secret key.
-     * 
+     *
      * The key is encrypted with the given RSA public key.
+     *
      * @param keyToEncrypt
      * @param encryptingKey
+     *
      * @throws IllegalBlockSizeException
-     * @throws BadPaddingException 
+     * @throws BadPaddingException
      */
     public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey encryptingKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.ENCRYPT_MODE, encryptingKey);
-        
+
         encoded = c.doFinal(keyToEncrypt.getEncoded());
         signature = null;
     }
-    
+
     /**
      * Constructs an object representing an encrypted AES secret key.
      * They key is encrypted with the given RSA public key.
-     * 
+     *
      * This constructor also cryptographically signs the key using the specified RSA PrivateKey.
-     * 
+     *
      * @param keyToEncrypt the secret key to be encrypted
-     * @param clientKey the client's public key
-     * @param signingKey the server's private key
+     * @param clientKey    the client's public key
+     * @param signingKey   the server's private key
+     *
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
-     * @throws InvalidKeyException 
+     * @throws InvalidKeyException
      */
     public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey clientKey, PrivateKey signingKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, ShortBufferException, SignatureException {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.ENCRYPT_MODE, clientKey);
-        
+
         encoded = c.doFinal(keyToEncrypt.getEncoded());
-        
+
         Signature s = Signature.getInstance("SHA256withRSA");
         s.initSign(signingKey);
-        for(byte b : encoded)
+        for (byte b : encoded)
             s.update(b);
         signature = s.sign();
     }
 
     /**
-     * 
+     *
      * @return the (encrypted) encoded form of the key
      */
     public byte[] getEncoded() {
         return encoded;
     }
-    
+
     /**
      * Decrypts the AES secret key using the given RSA private key.
-     * 
+     *
      * @param key
+     *
      * @return
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
      * @throws InvalidKeyException
      * @throws IllegalBlockSizeException
-     * @throws BadPaddingException 
+     * @throws BadPaddingException
      */
     public SecretKey decrypt(PrivateKey key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.DECRYPT_MODE, key);
-        
+
         byte[] decrypted = c.doFinal(encoded);
         return Keys.getAESSecretKeyFromEncoded(decrypted);
     }
-    
+
     /**
      * Decrypts the AES secret key using the given RSA private key, and verifies the signature using the given RSA public key.
-     * 
+     *
      * @param clientKey the private key to decrypt the secret key
      * @param serverKey the public key to verify the signature
+     *
      * @return the decrypted SecretKey, or null if the signature verification fails
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
@@ -125,31 +130,31 @@ public final class EncryptedSecretKey implements Serializable {
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      * @throws ShortBufferException
-     * @throws SignatureException 
+     * @throws SignatureException
      */
     public SecretKey decrypt(PrivateKey clientKey, PublicKey serverKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ShortBufferException, SignatureException {
-        if(!isSigned())
+        if (!isSigned())
             throw new RuntimeException("This secret key is not signed, but signature checking was requested.");
-        
+
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.DECRYPT_MODE, clientKey);
-        
+
         byte[] decrypted = c.doFinal(encoded);
-        
+
         Signature s = Signature.getInstance("SHA256withRSA");
         s.initVerify(serverKey);
-        
-        for(byte b : encoded)
+
+        for (byte b : encoded)
             s.update(b);
-        
-        if(s.verify(signature))
+
+        if (s.verify(signature))
             return Keys.getAESSecretKeyFromEncoded(decrypted);
         else
             return null;
     }
-    
+
     /**
-     * 
+     *
      * @return true if this key was signed cryptographically, false otherwise
      */
     public boolean isSigned() {

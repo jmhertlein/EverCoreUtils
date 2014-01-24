@@ -40,10 +40,10 @@ public class BugReport {
      * Constructs a new bug report based on provided environment variables
      *
      * @param plugin the plugin whose command caused an unhandled exception
-     * @param s the Bukkit server the exception ocurred on
-     * @param e the Exception object itself
-     * @param env any plugin-specific environment data necessary to help
-     * diagnose the problem
+     * @param s      the Bukkit server the exception ocurred on
+     * @param e      the Exception object itself
+     * @param env    any plugin-specific environment data necessary to help
+     *               diagnose the problem
      */
     public BugReport(Plugin plugin, Server s, Exception e, String env) {
         f = new YamlConfiguration();
@@ -110,16 +110,13 @@ public class BugReport {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         final BugReport other = (BugReport) obj;
-        if (!Objects.equals(this.f.saveToString(), other.f.saveToString())) {
+        if (!Objects.equals(this.f.saveToString(), other.f.saveToString()))
             return false;
-        }
         return true;
     }
 

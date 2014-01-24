@@ -39,7 +39,7 @@ public class TreeCommandExecutor implements CommandExecutor {
 
     /**
      * Creates a new instance of a TreeCommandExecutor
-     * 
+     *
      * It is ready to have leaves added to it and to be set as the executor for a command
      */
     public TreeCommandExecutor() {
@@ -48,8 +48,9 @@ public class TreeCommandExecutor implements CommandExecutor {
     }
 
     /**
-     * 
+     *
      * @param cmd the commandleaf to be added
+     *
      * @throws RuntimeException if a duplicate command is added
      */
     public void add(CommandLeaf cmd) {
@@ -65,9 +66,8 @@ public class TreeCommandExecutor implements CommandExecutor {
             temp = next;
         }
 
-        if (temp.executable != null) {
+        if (temp.executable != null)
             throw new RuntimeException("Error: leaf node already has command bound");
-        }
 
         temp.executable = cmd;
         leaves.add(cmd);
@@ -79,23 +79,23 @@ public class TreeCommandExecutor implements CommandExecutor {
      * @param command
      * @param label
      * @param args
+     *
      * @return
      */
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         CommandNode cur = root.getChild(label);
-        if(cur == null)
+        if (cur == null)
             cur = getAutoCompletedNextNode(root, label);
-        if (cur == null) {
+        if (cur == null)
             return false;
-        }
 
         int i = 0;
         while (!cur.children.isEmpty() && i < args.length) {
-            CommandNode next = cur.getChild(args[i]); 
-            if(next == null)
+            CommandNode next = cur.getChild(args[i]);
+            if (next == null)
                 next = getAutoCompletedNextNode(cur, args[i]);
-            
+
             if (next == null) {
                 sendInvalidCommandHelp(sender, root, cur, args[i]);
                 return true;
@@ -121,7 +121,7 @@ public class TreeCommandExecutor implements CommandExecutor {
         try {
             selectedLeaf.executable.execute(sender, command, cmdArgs);
         } catch (InsufficientPermissionException ex) {
-            if(ex.hasCustomMessage())
+            if (ex.hasCustomMessage())
                 sender.sendMessage(ChatColor.RED + ex.getCustomMessage());
             else
                 sender.sendMessage(ChatColor.RED + "You don't have permission to run this command.");
@@ -194,7 +194,7 @@ public class TreeCommandExecutor implements CommandExecutor {
             sender.sendMessage(ChatColor.AQUA + s);
         }
     }
-    
+
     private static void sendInvalidCommandHelp(CommandSender sender, CommandNode root, CommandNode currentNode, String invalidNodeString) {
         sender.sendMessage(String.format("%sInvalid command: \"%s%s%s\"", ChatColor.RED, ChatColor.DARK_RED, composeCommandParentage(root, currentNode) + " " + invalidNodeString, ChatColor.RED));
         sender.sendMessage(String.format("%sPossible replacements for \"%s%s%s\"", ChatColor.YELLOW, ChatColor.DARK_RED, invalidNodeString, ChatColor.YELLOW));
@@ -202,17 +202,17 @@ public class TreeCommandExecutor implements CommandExecutor {
             sender.sendMessage(ChatColor.AQUA + s);
         }
     }
-    
+
     private static String composeCommandParentage(CommandNode root, CommandNode n) {
         return n.parent == root ? n.nodeString : composeCommandParentage(root, n.parent) + " " + n.nodeString;
     }
-    
+
     private static CommandNode getAutoCompletedNextNode(CommandNode node, String token) {
-        for(CommandNode n : node.children.values()) {
-            if(n.nodeString.startsWith(token))
+        for (CommandNode n : node.children.values()) {
+            if (n.nodeString.startsWith(token))
                 return n;
         }
-        
+
         return null;
     }
 }

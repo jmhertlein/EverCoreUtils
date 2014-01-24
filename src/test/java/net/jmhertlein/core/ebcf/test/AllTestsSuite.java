@@ -14,9 +14,9 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    net.jmhertlein.core.ebcf.test.ManyCommandExecutionTest.class, 
-    net.jmhertlein.core.ebcf.test.CommandLeafInsertionTest.class, 
-    net.jmhertlein.core.ebcf.test.CommandExecutionTest.class, 
+    net.jmhertlein.core.ebcf.test.ManyCommandExecutionTest.class,
+    net.jmhertlein.core.ebcf.test.CommandLeafInsertionTest.class,
+    net.jmhertlein.core.ebcf.test.CommandExecutionTest.class,
     net.jmhertlein.core.ebcf.test.CommandPassedCorrectArgumentsTest.class,
     net.jmhertlein.core.ebcf.test.CommandWithArgumentExecutionTest.class,
     net.jmhertlein.core.ebcf.test.InvalidCommandTest.class,
@@ -24,5 +24,5 @@ import org.junit.runners.Suite;
     net.jmhertlein.core.ebcf.test.AutoCompleteTest.class
 })
 public class AllTestsSuite {
-    
+
 }

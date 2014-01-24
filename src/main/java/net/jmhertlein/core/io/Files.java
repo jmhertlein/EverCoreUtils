@@ -3,24 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.jmhertlein.core.io;
 
 import java.io.File;
 
 /**
  * Common File utilities.
- * 
+ *
  * @author joshua
  */
 public class Files {
-    public static final File join(String ... path) {
+    public static final File join(String... path) {
         File cur = new File(path[0]);
-        
-        for(int i = 1; i < path.length; i++ ) {
+
+        for (int i = 1; i < path.length; i++) {
             cur = new File(cur, path[i]);
         }
-        
+
         return cur;
     }
 }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.jmhertlein.core.crypto.test;
 
 import java.security.KeyPair;
@@ -23,14 +22,14 @@ public class EncryptedSecretKeyTest {
     @Test
     public void testTwoPassEncryption() {
         SecretKey key = Keys.newAESKey(128);
-        
-        KeyPair serverKeys = Keys.newRSAKeyPair(1024), 
+
+        KeyPair serverKeys = Keys.newRSAKeyPair(1024),
                 clientKeys = Keys.newRSAKeyPair(1024);
         try {
             EncryptedSecretKey wrapper = new EncryptedSecretKey(key, clientKeys.getPublic(), serverKeys.getPrivate());
-            
+
             SecretKey decryptedKey = wrapper.decrypt(clientKeys.getPrivate(), serverKeys.getPublic());
-            
+
             assertNotNull(decryptedKey);
             assertEquals(key, decryptedKey);
         } catch (Exception ex) {

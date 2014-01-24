@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  * A packet carrying arbitrary data on a specific channel.
- * 
+ *
  * @author Joshua Michael Hertlein <jmhertlein@gmail.com>
  */
 public class ChannelPacket implements Serializable {
