@@ -192,7 +192,7 @@ public abstract class Keys {
             decoded = Base64.decodeBase64(output);
 
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            //ioe.printStackTrace();
             return null;
         }
 
