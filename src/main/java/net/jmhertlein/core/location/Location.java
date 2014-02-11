@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import org.bukkit.Server;
 import org.bukkit.block.BlockFace;
@@ -63,7 +64,7 @@ public class Location implements Serializable {
 
     private static final long serialVersionUID = 6832150941951045383L;
     private String world;
-    private int x, y, z;
+    private float x, y, z;
     private float pitch, yaw;
 
     private Location() {
@@ -76,7 +77,7 @@ public class Location implements Serializable {
      * @param y
      * @param z
      */
-    public Location(String world, int x, int y, int z) {
+    public Location(String world, float x, float y, float z) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -85,7 +86,7 @@ public class Location implements Serializable {
         this.yaw = 0;
     }
 
-    public Location(String world, int x, int y, int z, float pitch, float yaw) {
+    public Location(String world, float x, float y, float z, float pitch, float yaw) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -114,7 +115,7 @@ public class Location implements Serializable {
      *
      * @return
      */
-    public int getX() {
+    public float getX() {
         return x;
     }
 
@@ -122,7 +123,7 @@ public class Location implements Serializable {
      *
      * @param x
      */
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
@@ -130,7 +131,7 @@ public class Location implements Serializable {
      *
      * @return
      */
-    public int getY() {
+    public float getY() {
         return y;
     }
 
@@ -138,7 +139,7 @@ public class Location implements Serializable {
      *
      * @param y
      */
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
@@ -146,7 +147,7 @@ public class Location implements Serializable {
      *
      * @return
      */
-    public int getZ() {
+    public float getZ() {
         return z;
     }
 
@@ -154,7 +155,7 @@ public class Location implements Serializable {
      *
      * @param z
      */
-    public void setZ(int z) {
+    public void setZ(float z) {
         this.z = z;
     }
 
@@ -174,33 +175,6 @@ public class Location implements Serializable {
         this.yaw = yaw;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Location other = (Location) obj;
-        if ((this.world == null) ? (other.world != null) : !this.world.equals(other.world))
-            return false;
-        if (this.x != other.x)
-            return false;
-        if (this.y != other.y)
-            return false;
-        if (this.z != other.z)
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 47 * hash + (this.world != null ? this.world.hashCode() : 0);
-        hash = 47 * hash + this.x;
-        hash = 47 * hash + this.y;
-        hash = 47 * hash + this.z;
-        return hash;
-    }
 
     /**
      *
@@ -209,7 +183,7 @@ public class Location implements Serializable {
      * @return
      */
     public static Location convertFromBukkitLocation(org.bukkit.Location loc) {
-        return new Location(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getPitch(), loc.getYaw());
+        return new Location(loc.getWorld().getName(), (float) loc.getX(), (float) loc.getY(), (float) loc.getZ(), loc.getPitch(), loc.getYaw());
     }
 
     /**
@@ -238,9 +212,9 @@ public class Location implements Serializable {
     public static Location fromList(List<String> list) {
         Location ret = new Location();
 
-        ret.x = Integer.parseInt(list.get(0));
-        ret.y = Integer.parseInt(list.get(1));
-        ret.z = Integer.parseInt(list.get(2));
+        ret.x = Float.parseFloat(list.get(0));
+        ret.y = Float.parseFloat(list.get(1));
+        ret.z = Float.parseFloat(list.get(2));
         ret.world = list.get(3);
         ret.pitch = list.size() >= 5 ? Float.parseFloat(list.get(4)) : 0;
         ret.yaw = list.size() >= 6 ? Float.parseFloat(list.get(5)) : 0;
@@ -250,17 +224,52 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("(%d, %d, %d, %s, %f, %f)", x, y, z, world, pitch, yaw);
+        return String.format("(%f, %f, %f, %s, %f, %f)", x, y, z, world, pitch, yaw);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + Objects.hashCode(this.world);
+        hash = 23 * hash + Float.floatToIntBits(this.x);
+        hash = 23 * hash + Float.floatToIntBits(this.y);
+        hash = 23 * hash + Float.floatToIntBits(this.z);
+        hash = 23 * hash + Float.floatToIntBits(this.pitch);
+        hash = 23 * hash + Float.floatToIntBits(this.yaw);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Location other = (Location) obj;
+        if (!Objects.equals(this.world, other.world))
+            return false;
+        if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x))
+            return false;
+        if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y))
+            return false;
+        if (Float.floatToIntBits(this.z) != Float.floatToIntBits(other.z))
+            return false;
+        if (Float.floatToIntBits(this.pitch) != Float.floatToIntBits(other.pitch))
+            return false;
+        if (Float.floatToIntBits(this.yaw) != Float.floatToIntBits(other.yaw))
+            return false;
+        return true;
+    }
+    
 
     public static Location parseLocation(String s) throws NumberFormatException {
         s = s.replaceFirst("[(]", "").replaceFirst("[)]", "");
         Scanner scan = new Scanner(s);
         scan.useDelimiter(",");
 
-        int x = Integer.parseInt(scan.next().trim()),
-                y = Integer.parseInt(scan.next().trim()),
-                z = Integer.parseInt(scan.next().trim());
+        Float x = Float.parseFloat(scan.next().trim()),
+                y = Float.parseFloat(scan.next().trim()),
+                z = Float.parseFloat(scan.next().trim());
         String world = scan.next().trim();
         float pitch = Float.parseFloat(scan.next().trim()),
                 yaw = Float.parseFloat(scan.next().trim());
