@@ -52,5 +52,33 @@ public class PolygonsTest {
         
         assertTrue(Polygons.polygonEdgesIntersect(poly1, poly2));
         assertFalse(Polygons.polygonEdgesIntersect(poly1, poly3));
-    }    
+    }
+
+    @Test
+    public void testPentagonEdgesIntersect() {
+        List<Point2D.Float> poly1 = new LinkedList<>(), poly2 = new LinkedList<>(),
+                poly3 = new LinkedList<>();
+        
+        poly1.add(new Point2D.Float(-1, 1));
+        poly1.add(new Point2D.Float(1, 1));
+        poly1.add(new Point2D.Float(2, 0));
+        poly1.add(new Point2D.Float(1, -1));
+        poly1.add(new Point2D.Float(-1, -1));
+        
+        poly2.add(new Point2D.Float(-4, -2));
+        poly2.add(new Point2D.Float(0, 4));
+        poly2.add(new Point2D.Float(4, 2));
+        poly2.add(new Point2D.Float(4, -4));
+        poly2.add(new Point2D.Float(-5, -3));
+        
+        poly3.add(new Point2D.Float(-1, 1));
+        poly3.add(new Point2D.Float(1, 1));
+        poly3.add(new Point2D.Float(-2, 0));
+        poly3.add(new Point2D.Float(1, -1));
+        poly3.add(new Point2D.Float(-1, -1));
+        
+        assertFalse(Polygons.polygonEdgesIntersect(poly1, poly2));
+        assertTrue(Polygons.polygonEdgesIntersect(poly1, poly3));
+    }
+  
 }
