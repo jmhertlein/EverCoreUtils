@@ -20,6 +20,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -199,6 +200,16 @@ public class ChanneledConnectionManager {
 
     public void addPacketReceiveListener(PacketReceiveListener l) {
         listeners.add(l);
+
+        //feed the listener all the packets it's missed
+        for(Map.Entry<Integer, Queue<Object>> channelEntry : bufferMap.entrySet()) {
+            Iterator<Object> itr = channelEntry.getValue().iterator();
+            while(itr.hasNext()) {
+                if(l.onPacketReceive(itr.next(), channelEntry.getKey())) {
+                    itr.remove();
+                }
+            }
+        }
     }
 
     /**
