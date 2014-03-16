@@ -38,6 +38,6 @@ public class InsufficientPermissionException extends Exception {
     }
 
     public boolean hasCustomMessage() {
-        return customMessage == null;
+        return customMessage != null;
     }
 }
