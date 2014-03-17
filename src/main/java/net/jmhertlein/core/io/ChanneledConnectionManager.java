@@ -46,7 +46,7 @@ public class ChanneledConnectionManager {
     private final ObjectInputStream ois;
     private final ObjectOutputStream oos;
     private final Map<Integer, Queue<Object>> bufferMap;
-    private final Queue<PacketReceiveListener> listeners;
+    private PacketReceiveListener listener;
     private Thread readThread;
     private volatile boolean shutdown;
 
@@ -60,7 +60,6 @@ public class ChanneledConnectionManager {
         this.oos = oos;
         bufferMap = new ConcurrentHashMap<>();
         shutdown = false;
-        listeners = new ConcurrentLinkedQueue<>();
         this.unclaimedAllocatedChannels = new ConcurrentLinkedQueue<>();
         nextUnallocatedChannel = 1;
     }
@@ -90,10 +89,9 @@ public class ChanneledConnectionManager {
                         continue;
                     }
 
-                    boolean addToBuffer = true;
-                    for (PacketReceiveListener l : listeners) {
-                        addToBuffer &= l.onPacketReceive(p.getData(), p.getChannel());
-                    }
+
+                    boolean addToBuffer = listener == null ? true : listener.onPacketReceive(p.getData(), p.getChannel());
+
                     if (!addToBuffer)
                         continue;
 
@@ -198,8 +196,13 @@ public class ChanneledConnectionManager {
         return buffer;
     }
 
+    @Deprecated
     public void addPacketReceiveListener(PacketReceiveListener l) {
-        listeners.add(l);
+        setPacketReceiveListener(l);
+    }
+
+    public void setPacketReceiveListener(PacketReceiveListener l) {
+        listener = l;
 
         //feed the listener all the packets it's missed
         for(Map.Entry<Integer, Queue<Object>> channelEntry : bufferMap.entrySet()) {
