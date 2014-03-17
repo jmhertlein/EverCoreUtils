@@ -136,18 +136,9 @@ public class TreeCommandExecutor implements CommandExecutor {
 
     private static List<String> composeChildNodesString(CommandNode selectedLeaf) {
         List<String> ret = new LinkedList<>();
-        String curLine = "";
-        int wordsOnCurLine = 0;
-        for (CommandNode child : selectedLeaf.children.values()) {
-            curLine += child.nodeString + " ";
-            wordsOnCurLine++;
-            if (wordsOnCurLine == 4) {
-                ret.add(curLine);
-                wordsOnCurLine = 0;
-                curLine = "";
-            }
-        }
-
+        for (CommandNode child : selectedLeaf.children.values())
+            ret.add(child.nodeString);
+        
         return ret;
     }
 
