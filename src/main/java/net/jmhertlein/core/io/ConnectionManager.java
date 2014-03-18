@@ -126,6 +126,12 @@ public class ConnectionManager {
 
     public void setPacketReceiveListener(PacketReceiveListener l) {
         listener = l;
+
+        for(Object o : unprocessedBuffer) {
+            listener.onPacketReceive(o);
+        }
+
+        unprocessedBuffer.clear();
     }
 
     public Callable getShutdownHook() {
