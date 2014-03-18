@@ -43,7 +43,7 @@ public class ClientSession {
     private final SecretKey sessionKey;
     private final int sessionID;
     private final Socket s;
-    private ChanneledConnectionManager connection;
+    private ConnectionManager connection;
 
     /**
      * Creates a client session, with the username the public key maps to in the Properties object
@@ -64,11 +64,11 @@ public class ClientSession {
     }
 
     public void initChannels(ObjectOutputStream oos, ObjectInputStream ois) {
-        connection = new ChanneledConnectionManager(oos, ois);
+        connection = new ConnectionManager(oos, ois);
         connection.startListenThread();
     }
 
-    public ChanneledConnectionManager getConnection() {
+    public ConnectionManager getConnection() {
         return connection;
     }
 
@@ -105,8 +105,8 @@ public class ClientSession {
         return sessionID;
     }
 
-    public void addPacketListener(PacketReceiveListener l) {
-        connection.addPacketReceiveListener(l);
+    public void setPacketListener(PacketReceiveListener l) {
+        connection.setPacketReceiveListener(l);
     }
 
     @Override

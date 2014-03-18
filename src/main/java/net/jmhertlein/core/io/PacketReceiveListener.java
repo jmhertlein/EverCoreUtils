@@ -24,9 +24,7 @@ public interface PacketReceiveListener {
     /**
      *
      * @param data
-     * @param channel
      *
-     * @return whether or not to mark the packet as 'consumed'. If any listener consumes the packet, it is not added to the channel's buffer
      */
-    public boolean onPacketReceive(Object data, int channel);
+    public void onPacketReceive(Object data);
 }
