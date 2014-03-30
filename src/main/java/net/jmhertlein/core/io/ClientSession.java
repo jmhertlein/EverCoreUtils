@@ -63,8 +63,8 @@ public class ClientSession {
         nextID++;
     }
 
-    public void initChannels(ObjectOutputStream oos, ObjectInputStream ois) {
-        connection = new ConnectionManager(oos, ois);
+    public void initChannels(Socket s, ObjectOutputStream oos, ObjectInputStream ois) {
+        connection = new ConnectionManager(s, oos, ois);
         connection.startListenThread();
     }
 

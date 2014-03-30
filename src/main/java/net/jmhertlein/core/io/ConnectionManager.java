@@ -20,6 +20,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -45,6 +46,7 @@ public class ConnectionManager {
 
     private final ObjectInputStream ois;
     private final ObjectOutputStream oos;
+    private final Socket s;
     private PacketReceiveListener listener;
     private final Queue<Object> unprocessedBuffer;
     private Thread readThread;
@@ -52,11 +54,16 @@ public class ConnectionManager {
 
     private Callable shutdownHook;
 
-    public ConnectionManager(final ObjectOutputStream oos, final ObjectInputStream ois) {
+    public ConnectionManager(final Socket s, final ObjectOutputStream oos, final ObjectInputStream ois) {
         this.ois = ois;
         this.oos = oos;
+        this.s = s;
         unprocessedBuffer = new ConcurrentLinkedQueue<>();
         shutdown = false;
+    }
+
+    public Socket getSocket() {
+        return s;
     }
 
     public boolean isShutdown() {
@@ -108,6 +115,7 @@ public class ConnectionManager {
         try {
             oos.close();
             ois.close();
+            s.close();
         } catch (IOException ex) {
         }
 
