@@ -94,7 +94,12 @@ public class ConnectionManager {
                     if(listener == null)
                         unprocessedBuffer.add(p);
                     else
+                        try {
                         listener.onPacketReceive(p);
+                        } catch(Throwable t) {
+                            System.err.println("EXCEPTION IN LISTENER THREAD, CAUGHT TO PREVENT CONNECTION LISTENER THREAD FROM DYING:");
+                            t.printStackTrace(System.err);
+                        }
 
                 }
             }
