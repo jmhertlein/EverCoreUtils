@@ -62,6 +62,14 @@ public class LabeledKeyPair {
 
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     public static LabeledKeyPair readFromYamlFile(File f) throws IOException {
         String s;
 
