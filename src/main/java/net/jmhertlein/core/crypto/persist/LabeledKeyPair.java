@@ -132,8 +132,8 @@ public class LabeledKeyPair {
         return true;
     }
 
-    @Override
-    public String toString() {
+
+    public String toVerboseString() {
         StringBuilder b = new StringBuilder();
         b.append("=====LabeledKeyPair=======\n");
         b.append("Pubkey:\n");
@@ -144,5 +144,8 @@ public class LabeledKeyPair {
         return b.toString();
     }
 
-
+    @Override
+    public String toString() {
+        return label;
+    }
 }
