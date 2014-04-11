@@ -17,6 +17,8 @@
 
 package net.jmhertlein.core.crypto.persist.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.KeyPair;
 import net.jmhertlein.core.crypto.Keys;
 import net.jmhertlein.core.crypto.persist.LabeledKeyPair;
@@ -31,7 +33,7 @@ import static org.junit.Assert.*;
 public class LabeledKeyPairTest {
     @Test
     public void testPersistance() {
-        KeyPair pair = Keys.newRSAKeyPair(1024);
+        KeyPair pair = Keys.newRSAKeyPair(2048);
         LabeledKeyPair p = new LabeledKeyPair("label", pair);
 
         String yaml = p.saveToYamlString();
@@ -44,7 +46,7 @@ public class LabeledKeyPairTest {
 
     @Test
     public void testEquals() {
-        final int KEY_LENGTH = 1024;
+        final int KEY_LENGTH = 2048;
         KeyPair a = Keys.newRSAKeyPair(KEY_LENGTH),
                 b = Keys.newRSAKeyPair(KEY_LENGTH),
                 c = Keys.newRSAKeyPair(KEY_LENGTH);
@@ -60,5 +62,17 @@ public class LabeledKeyPairTest {
         assertFalse(w.equals(z));
 
         assertFalse(y.equals(z));
+    }
+
+    @Test
+    public void testFileSaving() throws IOException {
+        File f = File.createTempFile("ECU-LKP-Test", ".yml");
+
+        LabeledKeyPair p = new LabeledKeyPair("test", Keys.newRSAKeyPair(2048));
+        p.writeToYamlFile(f);
+
+        LabeledKeyPair read = LabeledKeyPair.readFromYamlFile(f);
+        assertTrue(p.equals(read));
+        assertTrue(read.equals(p));
     }
 }
