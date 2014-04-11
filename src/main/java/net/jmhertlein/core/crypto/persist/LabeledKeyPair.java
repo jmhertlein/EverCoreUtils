@@ -73,8 +73,8 @@ public class LabeledKeyPair {
     public static LabeledKeyPair readFromYamlFile(File f) throws IOException {
         String s;
 
-        try(FileInputStream fis = new FileInputStream(f); Scanner scan = new Scanner(fis)) {
-            scan.useDelimiter("\\Z");
+        try(Scanner scan = new Scanner(f)) {
+            scan.useDelimiter("\\A");
             s = scan.next();
         }
 
