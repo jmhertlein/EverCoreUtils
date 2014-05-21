@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import javax.crypto.SecretKey;
 import net.jmhertlein.core.crypto.Keys;
+import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * An object representing the client in a client/server model.
@@ -51,11 +52,11 @@ public class ClientSession {
      * @param s
      * @param k
      * @param sessionKey
-     * @param p
+     * @param keyNameMappings
      */
-    public ClientSession(Socket s, PublicKey k, SecretKey sessionKey, Properties p) {
+    public ClientSession(Socket s, PublicKey k, SecretKey sessionKey, FileConfiguration keyNameMappings) {
         this.sessionKey = sessionKey;
-        this.username = p.getProperty(Keys.getBASE64ForKey(k));
+        this.username = keyNameMappings.getString(Keys.getBASE64ForKey(k));
         this.sessionID = nextID;
         this.s = s;
         this.pubKey = k;
@@ -98,7 +99,7 @@ public class ClientSession {
     }
 
     public String getUsername() {
-        return username;
+        return username.isEmpty() ? null : username;
     }
 
     public int getSessionID() {
