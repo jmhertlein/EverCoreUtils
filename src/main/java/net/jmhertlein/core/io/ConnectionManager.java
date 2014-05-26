@@ -110,7 +110,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Shuts down the listener thread and calls the shutdown hook.
+     * Shuts down the listener thread, closes the socket, and calls the shutdown hook.
      */
     public void shutdown() {
         shutdown = true;

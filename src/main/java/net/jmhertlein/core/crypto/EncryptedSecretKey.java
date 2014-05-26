@@ -38,6 +38,7 @@ import javax.crypto.ShortBufferException;
  * @author joshua
  */
 public final class EncryptedSecretKey implements Serializable {
+    private static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
 
     private final byte[] encoded, signature;
 
@@ -53,7 +54,7 @@ public final class EncryptedSecretKey implements Serializable {
      * @throws BadPaddingException
      */
     public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey encryptingKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        Cipher c = Cipher.getInstance("RSA");
+        Cipher c = Cipher.getInstance(ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, encryptingKey);
 
         encoded = c.doFinal(keyToEncrypt.getEncoded());
@@ -77,7 +78,7 @@ public final class EncryptedSecretKey implements Serializable {
      * @throws InvalidKeyException
      */
     public EncryptedSecretKey(SecretKey keyToEncrypt, PublicKey clientKey, PrivateKey signingKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, ShortBufferException, SignatureException {
-        Cipher c = Cipher.getInstance("RSA");
+        Cipher c = Cipher.getInstance(ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, clientKey);
 
         encoded = c.doFinal(keyToEncrypt.getEncoded());
@@ -110,7 +111,7 @@ public final class EncryptedSecretKey implements Serializable {
      * @throws BadPaddingException
      */
     public SecretKey decrypt(PrivateKey key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher c = Cipher.getInstance("RSA");
+        Cipher c = Cipher.getInstance(ALGORITHM);
         c.init(Cipher.DECRYPT_MODE, key);
 
         byte[] decrypted = c.doFinal(encoded);
@@ -136,7 +137,7 @@ public final class EncryptedSecretKey implements Serializable {
         if (!isSigned())
             throw new RuntimeException("This secret key is not signed, but signature checking was requested.");
 
-        Cipher c = Cipher.getInstance("RSA");
+        Cipher c = Cipher.getInstance(ALGORITHM);
         c.init(Cipher.DECRYPT_MODE, clientKey);
 
         byte[] decrypted = c.doFinal(encoded);

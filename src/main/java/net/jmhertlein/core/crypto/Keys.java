@@ -45,7 +45,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
@@ -314,12 +313,7 @@ public abstract class Keys {
      * @return the AES SecretKey, or null if the AES algorithm is not available on the system
      */
     public static SecretKey getAESSecretKeyFromEncoded(byte[] bytes) {
-        try {
-            return SecretKeyFactory.getInstance("AES").generateSecret(new SecretKeySpec(bytes, "AES"));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+        return new SecretKeySpec(bytes, "AES");
     }
 
     /**
