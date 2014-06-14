@@ -38,7 +38,7 @@ import javax.crypto.ShortBufferException;
  * @author joshua
  */
 public final class EncryptedSecretKey implements Serializable {
-    private static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
+    private static final String ALGORITHM = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 
     private final byte[] encoded, signature;
 
