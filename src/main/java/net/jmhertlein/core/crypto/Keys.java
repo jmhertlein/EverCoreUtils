@@ -31,8 +31,12 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -218,6 +222,57 @@ public abstract class Keys {
         keyPairGen.initialize(bits);
 
         return keyPairGen.generateKeyPair();
+    }
+
+    /**
+     * Generates a new Elliptic Curve Digital Signature Algorithm (ECDSA) public/private key pair.
+     *
+     * System's default SecureRandom is used
+     * @param curveName the name of a pre-defined elliptic curve (e.g. secp521r1)
+     * @param provider the JCE provider to use
+     * @return a new ECDSA key pair
+     */
+    public static KeyPair newECDSAKeyPair(String curveName, String provider) {
+        KeyPair ret;
+        try {
+            ECGenParameterSpec ecGenSpec = new ECGenParameterSpec(curveName);
+            KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", provider);
+            g.initialize(ecGenSpec, new SecureRandom());
+            ret = g.generateKeyPair();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchProviderException ex) {
+            Logger.getLogger(Keys.class.getName()).log(Level.SEVERE, null, ex);
+            ret = null;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Generates a new Elliptic Curve Digital Signature Algorithm (ECDSA) public/private key pair.
+     *
+     * The system's default SecureRandom is used, and the secp521r1 named elliptic curve is used
+     *
+     * @param provider the JCE provider to use
+     * @return a new ECDSA key pair
+     */
+    public static KeyPair newECDSAKeyPair(String provider) {
+        return newECDSAKeyPair("secp521r1", provider);
+    }
+
+    /**
+     * Generates a new Elliptic Curve Digital Signature Algorithm (ECDSA) public/private key pair.
+     *
+     * The system's default SecureRandom is used, and the secp521r1 named elliptic curve is used
+     *
+     * The BouncyCastle provider is used if possible, otherwise the most-preferred installed JCE provider is used
+     *
+     * @return a new ECDSA key pair
+     */
+    public static KeyPair newECDSAKeyPair() {
+        if(Security.getProvider("BC") == null)
+            return newECDSAKeyPair("secp521r1", Security.getProviders()[0].getName());
+        else
+            return newECDSAKeyPair("secp521r1", "BC");
     }
 
     /**
