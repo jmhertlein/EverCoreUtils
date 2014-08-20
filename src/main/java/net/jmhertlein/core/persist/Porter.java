@@ -23,6 +23,7 @@ import java.io.*;
  *
  * @author Josh
  */
+@Deprecated
 public class Porter {
 
     private File target;
