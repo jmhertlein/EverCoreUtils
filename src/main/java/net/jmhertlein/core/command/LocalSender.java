@@ -97,4 +97,8 @@ public class LocalSender {
     public void sendMessage(String msg) {
         sender.sendMessage(msg);
     }
+    
+    public void sendMessageF(String msg, Object ... args) {
+        sender.sendMessage(String.format(msg, args));
+    }
 }
