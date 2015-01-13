@@ -17,7 +17,7 @@
 package net.jmhertlein.core.ebcf.test;
 
 import net.jmhertlein.core.ebcf.CommandDefinition;
-import net.jmhertlein.core.ebcf.annotation.ExecutableCommand;
+import net.jmhertlein.core.ebcf.annotation.CommandMethod;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -27,35 +27,35 @@ import org.bukkit.command.CommandSender;
 public class SampleCommandDefinition implements CommandDefinition {
     private String ran;
     
-    @ExecutableCommand(path = "say hi", console = true)
+    @CommandMethod(path = "say hi", console = true)
     public void sayHi(CommandSender s, String[] args) {
         System.out.println("Hi");
         ran = "sayhi";
     }
     
-    @ExecutableCommand(path = "this one is really pretty long", console = true)
+    @CommandMethod(path = "this one is really pretty long", console = true)
     public void longCmd(CommandSender s, String[] args) {
         ran = "longcmd";
     }
     
-    @ExecutableCommand(path = "this one is really pretty different", console = true)
+    @CommandMethod(path = "this one is really pretty different", console = true)
     public void longCmdDiff(CommandSender s, String[] args) {
         ran="longcmddiff";
     }
     
-    @ExecutableCommand(path = "say bye", console = true)
+    @CommandMethod(path = "say bye", console = true)
     public void sayBye(CommandSender s, String[] args) {
         System.out.println("Bye");
         ran="saybye";
     }
     
-    @ExecutableCommand(path = "sayone", console = true)
+    @CommandMethod(path = "sayone", console = true)
     public void sayOne(CommandSender s, String[] args) {
         System.out.println("One");
         ran="sayone";
     }
     
-    @ExecutableCommand(path = "echo", requiredArgs = 1, console = true, helpMsg = "This is help for echo. Usage: /echo <message>")
+    @CommandMethod(path = "echo", requiredArgs = 1, console = true, helpMsg = "This is help for echo. Usage: /echo <message>")
     public void echo(CommandSender sender, String[] args) {
         StringBuilder b = new StringBuilder();
         for(String s : args) {

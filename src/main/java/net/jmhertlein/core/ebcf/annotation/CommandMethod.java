@@ -14,26 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jmhertlein.core.ebcf.test;
+package net.jmhertlein.core.ebcf.annotation;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author joshua
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    net.jmhertlein.core.ebcf.test.ManyCommandExecutionTest.class,
-    net.jmhertlein.core.ebcf.test.CommandLeafInsertionTest.class,
-    net.jmhertlein.core.ebcf.test.CommandExecutionTest.class,
-    net.jmhertlein.core.ebcf.test.CommandPassedCorrectArgumentsTest.class,
-    net.jmhertlein.core.ebcf.test.CommandWithArgumentExecutionTest.class,
-    net.jmhertlein.core.ebcf.test.InvalidCommandTest.class,
-    net.jmhertlein.core.ebcf.test.NotEnoughRequiredArgsTest.class,
-    net.jmhertlein.core.ebcf.test.AutoCompleteTest.class
-})
-public class AllTestsSuite {
 
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CommandMethod {
+    String path();
+    boolean console() default false;
+    boolean player() default true;
+    String permNode() default "";
+    String helpMsg() default "No help available.";
+    int requiredArgs() default 0;
 }

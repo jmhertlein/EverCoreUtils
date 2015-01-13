@@ -16,42 +16,50 @@
  */
 package net.jmhertlein.core.ebcf;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.jmhertlein.core.ebcf.annotation.CommandMethod;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
- * A CommandLeaf is the executable leaf of a tree of commands, and represents the actual command.
+ * A CommandLeaf is the executable leaf of a tree of commands, and represents
+ * the actual command.
  *
  * @author joshua
  */
-public abstract class CommandLeaf {
+public class CommandLeaf {
+
     private final String[] nodeStrings;
-    private final int requiredArgs;
+    private final CommandMethod info;
+    private final Method m;
+    private final CommandDefinition caller;
 
     /**
-     * Creates a new CommandLeaf. The constructor takes one String argument,
-     * and it should be the slash command exactly as a player would type it,
-     * with these differences:
-     * - no leading "/"
-     * - all arguments must be at the end of the command
-     * - Replace required arguments with "!", and optional arguments with "?"
-     * - The elements must occur in this order: <command> <required args> <optional args>
+     * Creates a new CommandLeaf from meta-information.
+     * 
+     * If your CommandDefinition class has only static methods,
+     * then d can be null
      *
-     * Ex: "bank deposit currency !" (where ! will be the amount of currency
-     * the user wants to deposit)
-     *
-     * @param command the formatted command string, see above
-     * @param required
+     * @param info - meta-information about the command
+     * @param m - the method to invoke to run the command
+     * @param d - the CommandDefinition that m belongs to
      */
-    public CommandLeaf(String command, int required) {
-        nodeStrings = command.split(" ");
-        requiredArgs = required;
+    public CommandLeaf(CommandMethod info, Method m, CommandDefinition d) {
+        this.nodeStrings = info.path().split(" ");
+        this.m = m;
+        this.caller = d;
+        this.info = info;
 
-        if (nodeStrings.length == 0)
+        if (nodeStrings.length == 0) {
             throw new RuntimeException("Invalid command: Must have at least one non-argument string.");
+        }
     }
 
     /**
@@ -59,14 +67,15 @@ public abstract class CommandLeaf {
      * @return how many required arguments the leaf requires
      */
     public int getNumRequiredArgs() {
-        return requiredArgs;
+        return info.requiredArgs();
     }
 
     /**
      *
      * @param index the index of the string to retrieve (0 is the first string)
      *
-     * @return The string at position 'index' of the command string (no arguments included)
+     * @return The string at position 'index' of the command string (no
+     * arguments included)
      */
     public String getStringAt(int index) {
         return index < nodeStrings.length ? nodeStrings[index] : null;
@@ -74,7 +83,8 @@ public abstract class CommandLeaf {
 
     /**
      *
-     * @return an unmodifiable list of all substrings in the command string (space-delimited)
+     * @return an unmodifiable list of all substrings in the command string
+     * (space-delimited)
      */
     public List<String> getStringNodes() {
         return Collections.unmodifiableList(Arrays.asList(nodeStrings));
@@ -82,20 +92,42 @@ public abstract class CommandLeaf {
 
     /**
      * The analogue to CommandExecutor::onCommand(). This is called when a
-     * player has successfully type the command and supplied enough required args
+     * player has successfully type the command and supplied enough required
+     * args
      *
      * @param sender the CommandSender executing the command
      * @param cmd
-     * @param args   required arguments and optional arguments, required arguments first.
+     * @param args required arguments and optional arguments, required arguments
+     * first.
      *
-     * @throws InsufficientPermissionException   if the sender doesn't have sufficient permission to run the command
-     * @throws UnsupportedCommandSenderException if the sender is not able to run the command (example: sender is console instead of Player)
+     * @throws InsufficientPermissionException if the sender doesn't have
+     * sufficient permission to run the command
+     * @throws UnsupportedCommandSenderException if the sender is not able to
+     * run the command (example: sender is console instead of Player)
      */
-    public abstract void execute(CommandSender sender, Command cmd, String[] args) throws InsufficientPermissionException, UnsupportedCommandSenderException;
+    public void execute(CommandSender sender, Command cmd, String[] args) throws InsufficientPermissionException, UnsupportedCommandSenderException {
+        if (!info.permNode().isEmpty() && !sender.hasPermission(info.permNode())) {
+            throw new InsufficientPermissionException();
+        }
+
+        boolean isPlayer = sender instanceof Player;
+        if ((isPlayer && !info.player()) || (!isPlayer && !info.console())) {
+            throw new UnsupportedCommandSenderException(sender);
+        }
+
+        try {
+            m.invoke(caller, sender, args);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(TreeCommandExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      *
-     * @return the message to be sent to the user if they correctly type the command, but don't supply enough required arguments
+     * @return the message to be sent to the user if they correctly type the
+     * command, but don't supply enough required arguments
      */
-    public abstract String getMissingRequiredArgsHelpMessage();
+    public String getMissingRequiredArgsHelpMessage() {
+        return info.helpMsg();
+    }
 }
