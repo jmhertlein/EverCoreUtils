@@ -47,7 +47,7 @@ public class MockCommandSender implements CommandSender {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "mock sender";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MockCommandSender implements CommandSender {
 
     @Override
     public boolean hasPermission(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override

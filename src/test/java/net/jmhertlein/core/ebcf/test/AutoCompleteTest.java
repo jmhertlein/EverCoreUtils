@@ -5,7 +5,6 @@
  */
 package net.jmhertlein.core.ebcf.test;
 
-import com.avaje.ebeaninternal.server.core.OnBootupClassSearchMatcher;
 import net.jmhertlein.core.ebcf.CommandLeaf;
 import net.jmhertlein.core.ebcf.TreeCommandExecutor;
 import org.bukkit.command.Command;
@@ -23,7 +22,7 @@ public class AutoCompleteTest {
         TreeCommandExecutor e = new TreeCommandExecutor();
         final boolean[] passed = new boolean[]{false};
 
-        CommandLeaf testLeaf = new CommandLeaf("test method quite long ? ?") {
+        CommandLeaf testLeaf = new CommandLeaf("test method quite long", 0) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 passed[0] = true;

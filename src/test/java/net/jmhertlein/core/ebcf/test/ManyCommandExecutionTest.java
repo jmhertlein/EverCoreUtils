@@ -44,7 +44,7 @@ public class ManyCommandExecutionTest {
     private Set<CommandLeaf> generateTestLeaves(final boolean[] passed) {
         Set<CommandLeaf> leaves = new HashSet<>();
 
-        leaves.add(new CommandLeaf("test method0") {
+        leaves.add(new CommandLeaf("test method0", 0) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("I'm method0 and I have " + args.length + " args.");
@@ -57,7 +57,7 @@ public class ManyCommandExecutionTest {
             }
         });
 
-        leaves.add(new CommandLeaf("test method1 !") {
+        leaves.add(new CommandLeaf("test method1", 1) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("I'm method1 and I have " + args.length + " args.");
@@ -71,7 +71,7 @@ public class ManyCommandExecutionTest {
             }
         });
 
-        leaves.add(new CommandLeaf("test method2 ! !") {
+        leaves.add(new CommandLeaf("test method2", 2) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("I'm method2 and I have " + args.length + " args.");
@@ -84,7 +84,7 @@ public class ManyCommandExecutionTest {
             }
         });
 
-        leaves.add(new CommandLeaf("test method3 ! ! ?") {
+        leaves.add(new CommandLeaf("test method3", 2) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("I'm method3 and I have " + args.length + " args.");

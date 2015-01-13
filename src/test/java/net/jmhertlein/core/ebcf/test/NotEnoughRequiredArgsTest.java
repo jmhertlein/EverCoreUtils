@@ -23,7 +23,7 @@ public class NotEnoughRequiredArgsTest {
         TreeCommandExecutor e = new TreeCommandExecutor();
         final boolean[] passed = new boolean[]{false, false};
 
-        CommandLeaf testLeaf = new CommandLeaf("test method ! ! ?") {
+        CommandLeaf testLeaf = new CommandLeaf("test method", 2) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 passed[0] = true;

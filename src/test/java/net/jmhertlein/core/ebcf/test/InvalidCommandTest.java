@@ -22,7 +22,7 @@ public class InvalidCommandTest {
         TreeCommandExecutor e = new TreeCommandExecutor();
         final boolean[] passed = new boolean[]{false};
 
-        CommandLeaf testLeaf = new CommandLeaf("testplugin hello") {
+        CommandLeaf testLeaf = new CommandLeaf("testplugin hello", 0) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 passed[0] = true;

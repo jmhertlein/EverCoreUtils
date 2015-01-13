@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CommandLeaf {
     private final String[] nodeStrings;
-    private final int requiredArgs, optionalArgs;
+    private final int requiredArgs;
 
     /**
      * Creates a new CommandLeaf. The constructor takes one String argument,
@@ -44,23 +44,11 @@ public abstract class CommandLeaf {
      * the user wants to deposit)
      *
      * @param command the formatted command string, see above
+     * @param required
      */
-    public CommandLeaf(String command) {
-        int required = 0,
-                optional = 0;
-
-        String[] split = command.split(" ");
-
-        int i = split.length - 1;
-        for (; i >= 0 && split[i].equals("?"); i--)
-            optional++;
-        for (; i >= 0 && split[i].equals("!"); i--)
-            required++;
-
-        nodeStrings = new String[i + 1];
-        System.arraycopy(split, 0, nodeStrings, 0, nodeStrings.length);
+    public CommandLeaf(String command, int required) {
+        nodeStrings = command.split(" ");
         requiredArgs = required;
-        optionalArgs = optional;
 
         if (nodeStrings.length == 0)
             throw new RuntimeException("Invalid command: Must have at least one non-argument string.");
@@ -72,15 +60,6 @@ public abstract class CommandLeaf {
      */
     public int getNumRequiredArgs() {
         return requiredArgs;
-    }
-
-    /**
-     * how many additional optional arguments the leaf will accept
-     *
-     * @return
-     */
-    public int getNumOptionalArgs() {
-        return optionalArgs;
     }
 
     /**

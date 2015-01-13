@@ -25,7 +25,7 @@ public class CommandExecutionTest {
     public void testCommandExecution() {
         final boolean[] b = new boolean[]{false};
         TreeCommandExecutor e = new TreeCommandExecutor();
-        CommandLeaf leaf = new CommandLeaf("testplugin hello") {
+        CommandLeaf leaf = new CommandLeaf("testplugin hello", 0) {
             @Override
             public String getMissingRequiredArgsHelpMessage() {
                 throw new UnsupportedOperationException("Not supported yet.");

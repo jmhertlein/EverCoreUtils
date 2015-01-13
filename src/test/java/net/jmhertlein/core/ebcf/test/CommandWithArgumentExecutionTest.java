@@ -20,7 +20,7 @@ public class CommandWithArgumentExecutionTest {
     @Test
     public void testCommandWithArgsTest() {
         final boolean[] passed = new boolean[]{false};
-        CommandLeaf leaf = new CommandLeaf("test method3 ! ! ?") {
+        CommandLeaf leaf = new CommandLeaf("test method3", 2) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("I'm method3 and I have " + args.length + " args.");

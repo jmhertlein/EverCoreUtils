@@ -16,6 +16,9 @@
  */
 package net.jmhertlein.core.ebcf;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,10 +26,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.jmhertlein.core.ebcf.annotation.ExecutableCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -45,6 +52,45 @@ public class TreeCommandExecutor implements CommandExecutor {
     public TreeCommandExecutor() {
         root = new CommandNode(null, null);
         leaves = new HashSet<>();
+    }
+    
+    public void add(final CommandDefinition c) {
+        Method[] methods = c.getClass().getMethods();
+        
+        for(final Method m : methods) {
+            final ExecutableCommand cmdInfo = (ExecutableCommand) m.getAnnotation(ExecutableCommand.class);
+            if(cmdInfo == null) {
+                continue;
+            }
+                    
+            CommandLeaf f = new CommandLeaf(cmdInfo.path(), cmdInfo.requiredArgs()) {
+                @Override
+                public void execute(CommandSender sender, Command cmd, String[] args) throws InsufficientPermissionException, UnsupportedCommandSenderException {
+                    if(cmdInfo.permNode() != null && !sender.hasPermission(cmdInfo.permNode())) {
+                        throw new InsufficientPermissionException();
+                    }
+                    
+                    boolean isPlayer = sender instanceof Player;
+                    if(      (isPlayer && !cmdInfo.player()) || 
+                            (!isPlayer && !cmdInfo.console())) {
+                        throw new UnsupportedCommandSenderException(sender);
+                    }
+                    
+                    try {
+                        m.invoke(c, sender, args);
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        Logger.getLogger(TreeCommandExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
+                @Override
+                public String getMissingRequiredArgsHelpMessage() {
+                    return cmdInfo.helpMsg();
+                }
+            };
+            
+            add(f);
+        }
     }
 
     /**
@@ -84,7 +130,7 @@ public class TreeCommandExecutor implements CommandExecutor {
      */
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandNode cur = root.getChild(label);
+        CommandNode cur = root.getChild(label); //TODO: check if this breaks aliases
         if (cur == null)
             cur = getAutoCompletedNextNode(root, label);
         if (cur == null)
@@ -105,7 +151,7 @@ public class TreeCommandExecutor implements CommandExecutor {
         }
 
         CommandNode selectedLeaf = cur;
-        //once we reach the end, assume the rest of the stuff in args are actually arguments (either ! or ?)
+        //once we reach the end, assume the rest of the stuff in args are actually arguments
         if (selectedLeaf.executable == null) {
             sendIncompleteCommandHelp(sender, root, selectedLeaf);
             return true;

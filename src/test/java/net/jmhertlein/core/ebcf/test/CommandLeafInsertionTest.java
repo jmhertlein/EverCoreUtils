@@ -21,7 +21,7 @@ public class CommandLeafInsertionTest {
     @Test
     public void testCommandInsertion() {
         TreeCommandExecutor e = new TreeCommandExecutor();
-        CommandLeaf testLeaf = new CommandLeaf("testplugin hello") {
+        CommandLeaf testLeaf = new CommandLeaf("testplugin hello", 0) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 System.out.println("Hello World");

@@ -20,7 +20,7 @@ public class CommandPassedCorrectArgumentsTest {
     @Test
     public void commandPassedCorrectArgumentsTest() {
         TreeCommandExecutor e = new TreeCommandExecutor();
-        CommandLeaf leaf = new CommandLeaf("test method ! ! ? ?") {
+        CommandLeaf leaf = new CommandLeaf("test method", 2) {
             @Override
             public void execute(CommandSender sender, Command cmd, String[] args) {
                 assertTrue(args.length == 4);
@@ -37,7 +37,6 @@ public class CommandPassedCorrectArgumentsTest {
         };
 
         assertTrue(leaf.getNumRequiredArgs() == 2);
-        assertTrue(leaf.getNumOptionalArgs() == 2);
         e.add(leaf);
 
         e.onCommand(new MockCommandSender(), null, "test", new String[]{"method", "arg1", "arg2", "arg3opt", "arg4opt"});
