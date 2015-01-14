@@ -41,6 +41,7 @@ public class CommandDefinitionTest {
     @After
     public void tearDown() {
         e = null;
+        d = null;
     }
     
     @Test
@@ -68,5 +69,12 @@ public class CommandDefinitionTest {
     public void testEchoWithArgs() {
         e.onCommand(new MockCommandSender(), null, "echo", new String[]{"echo", "this,", "machine!"});
         assertEquals(d.getRan(), "echo");
+    }
+    
+    @Test
+    public void testLongWithArgs() {
+        e.onCommand(new MockCommandSender(), null, "long", new String[]{"command", "path", "arg1", "arg2", "arg3"});
+        assertEquals(d.getRan(), "longcmdwithargs");
+        assertEquals(d.getArgsPassed(), 3);
     }
 }

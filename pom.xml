@@ -4,11 +4,11 @@
 
   <groupId>net.jmhertlein</groupId>
   <artifactId>EverCoreUtils</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>EverCoreUtils</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/jmhertlein/EverCoreUtils</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -26,6 +26,7 @@ import org.bukkit.command.CommandSender;
  */
 public class SampleCommandDefinition implements CommandDefinition {
     private String ran;
+    private int argsPassed;
     
     @CommandMethod(path = "say hi", console = true)
     public void sayHi(CommandSender s, String[] args) {
@@ -41,6 +42,20 @@ public class SampleCommandDefinition implements CommandDefinition {
     @CommandMethod(path = "this one is really pretty different", console = true)
     public void longCmdDiff(CommandSender s, String[] args) {
         ran="longcmddiff";
+    }
+    
+    @CommandMethod(path = "long command path", requiredArgs = 3, console = true)
+    public void longCmdWithArgs(CommandSender s, String[] args) {
+        System.out.println("I was called with args:");
+        for(String arg : args) {
+            System.out.println(arg);
+        }
+        ran = "longcmdwithargs";
+        argsPassed = args.length;
+    }
+
+    public int getArgsPassed() {
+        return argsPassed;
     }
     
     @CommandMethod(path = "say bye", console = true)
