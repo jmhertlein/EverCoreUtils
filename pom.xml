@@ -71,62 +71,20 @@
       </plugin>
     </plugins>
   </build>
+  
+  <distributionManagement>
+    <repository>
+      <id>jmh-repo</id>
+      <url>sftp://maven.jmhertlein.net:4242/home/joshua/public_html/maven</url>
+    </repository>
+  </distributionManagement>
+  <description>Core libraries for Everdras' plugins.</description>
 
-  <profiles>
-    <profile>
-      <id>shaded</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>2.1</version>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-                <configuration>
-                  <minimizeJar>true</minimizeJar>
-                  <filters>
-                    <filter>
-                      <excludes>
-                        <exclude>META-INF/*.SF</exclude>
-                        <exclude>META-INF/*.DSA</exclude>
-                        <exclude>META-INF/*.RSA</exclude>
-                        <exclude>junit:junit</exclude>
-                        <exclude>org.apache.maven:lib:tests</exclude>
-                      </excludes>
-                    </filter>
-                  </filters>
-                  <relocations>
-                    <relocation>
-                      <pattern>org.apache.commons.codec</pattern>
-                      <shadedPattern>net.jmhertlein.core.shaded.org.apache.commons.codec</shadedPattern>
-                    </relocation>
-                  </relocations>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-<distributionManagement>
-  <repository>
-    <id>jmh-repo</id>
-    <url>sftp://maven.jmhertlein.net:4242/home/joshua/public_html/maven</url>
-  </repository>
-</distributionManagement>
-<description>Core libraries for Everdras' plugins.</description>
-
-<licenses>
-  <license>
-    <name>The GNU General Public License, version 3</name>
-    <url>http://www.gnu.org/licenses/gpl.txt</url>
-    <distribution>repo</distribution>
-  </license>
-</licenses>
+  <licenses>
+    <license>
+      <name>The GNU General Public License, version 3</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>
