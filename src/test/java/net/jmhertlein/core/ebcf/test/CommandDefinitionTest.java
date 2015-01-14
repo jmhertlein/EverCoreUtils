@@ -91,4 +91,13 @@ public class CommandDefinitionTest {
         
         assertTrue(exceptionThrown);        
     }
+    
+    @Test
+    public void testSingleParamMethods() {
+        e.onCommand(new MockCommandSender(), new MockCommand("param"), "param", new String[]{"args"});
+        assertEquals(d.getRan(), "paramargs");
+        
+        e.onCommand(new MockCommandSender(), new MockCommand("param"), "param", new String[]{"sender"});
+        assertEquals(d.getRan(), "paramsender");
+    }
 }

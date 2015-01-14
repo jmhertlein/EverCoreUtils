@@ -29,7 +29,7 @@ public class SampleCommandDefinition implements CommandDefinition {
     private int argsPassed;
     
     @CommandMethod(path = "say hi", console = true)
-    public void sayHi(CommandSender s, String[] args) {
+    public void sayHi() {
         System.out.println("Hi");
         ran = "sayhi";
     }
@@ -79,6 +79,16 @@ public class SampleCommandDefinition implements CommandDefinition {
         }
         System.out.println(b.toString());
         ran="echo";
+    }
+    
+    @CommandMethod(path = "param args", console = true)
+    public void paramArgs(String[] args) {
+        ran="paramargs";
+    }
+    
+    @CommandMethod(path = "param sender", console = true)
+    public void paramSender(CommandSender sender) {
+        ran="paramsender";
     }
 
     public String getRan() {

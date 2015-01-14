@@ -125,7 +125,7 @@ public class CommandLeaf {
                 if(t[0].equals(CommandSender.class)) {
                     m.invoke(caller, sender);
                 } else if(t[0].equals(String[].class)) {
-                    m.invoke(caller, (Object[]) args);
+                    m.invoke(caller, (Object) args);
                 } else {
                     throw newComplaintAboutParams(m);
                 }
