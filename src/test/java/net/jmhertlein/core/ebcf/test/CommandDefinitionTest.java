@@ -46,34 +46,34 @@ public class CommandDefinitionTest {
     
     @Test
     public void testSimple() {
-        e.onCommand(new MockCommandSender(), null, "sayone", new String[0]);
+        e.onCommand(new MockCommandSender(), new MockCommand("sayone"), "sayone", new String[0]);
         assertEquals(d.getRan(), "sayone");
     }
     
     @Test
     public void testLongs() {
-        e.onCommand(new MockCommandSender(), null, "this", new String[]{"one", "is", "really",  "pretty", "long"});
+        e.onCommand(new MockCommandSender(), new MockCommand("this"), "this", new String[]{"one", "is", "really",  "pretty", "long"});
         assertEquals(d.getRan(), "longcmd");
         
-        e.onCommand(new MockCommandSender(), null, "this", new String[]{"one", "is", "really",  "pretty", "different"});
+        e.onCommand(new MockCommandSender(), new MockCommand("this"), "this", new String[]{"one", "is", "really",  "pretty", "different"});
         assertEquals(d.getRan(), "longcmddiff");
     }
     
     @Test
     public void testEchoNoArgs() {
-        e.onCommand(new MockCommandSender(), null, "echo", new String[0]);
+        e.onCommand(new MockCommandSender(), new MockCommand("echo"), "echo", new String[0]);
         assertNull(d.getRan());
     }
     
     @Test
     public void testEchoWithArgs() {
-        e.onCommand(new MockCommandSender(), null, "echo", new String[]{"echo", "this,", "machine!"});
+        e.onCommand(new MockCommandSender(), new MockCommand("echo"), "echo", new String[]{"echo", "this,", "machine!"});
         assertEquals(d.getRan(), "echo");
     }
     
     @Test
     public void testLongWithArgs() {
-        e.onCommand(new MockCommandSender(), null, "long", new String[]{"command", "path", "arg1", "arg2", "arg3"});
+        e.onCommand(new MockCommandSender(), new MockCommand("long"), "long", new String[]{"command", "path", "arg1", "arg2", "arg3"});
         assertEquals(d.getRan(), "longcmdwithargs");
         assertEquals(d.getArgsPassed(), 3);
     }

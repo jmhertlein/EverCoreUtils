@@ -100,7 +100,7 @@ public class TreeCommandExecutor implements CommandExecutor {
      */
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandNode cur = root.getChild(label); //TODO: check if this breaks aliases
+        CommandNode cur = root.getChild(command.getName());
         if (cur == null)
             cur = getAutoCompletedNextNode(root, label);
         if (cur == null)
