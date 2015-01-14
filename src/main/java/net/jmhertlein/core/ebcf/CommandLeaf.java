@@ -18,6 +18,7 @@ package net.jmhertlein.core.ebcf;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -116,7 +117,29 @@ public class CommandLeaf {
         }
 
         try {
-            m.invoke(caller, sender, args);
+            Type[] t = m.getParameterTypes();
+            if(t.length == 0) {
+                m.invoke(caller, null);
+                
+            } else if(t.length == 1) {
+                if(t[0].equals(CommandSender.class)) {
+                    m.invoke(caller, sender);
+                } else if(t[0].equals(String[].class)) {
+                    m.invoke(caller, (Object[]) args);
+                } else {
+                    throw newComplaintAboutParams(m);
+                }
+                
+            } else if(t.length == 2) {
+                if(t[0].equals(CommandSender.class) && t[1].equals(String[].class)) {
+                    m.invoke(caller, sender, args);
+                } else {
+                    throw newComplaintAboutParams(m);
+                }
+                
+            } else {
+                throw newComplaintAboutParams(m);
+            }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(TreeCommandExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,5 +152,10 @@ public class CommandLeaf {
      */
     public String getMissingRequiredArgsHelpMessage() {
         return info.helpMsg();
+    }
+    
+    private static RuntimeException newComplaintAboutParams(Method m) {
+        return new RuntimeException("ERROR: Method " + m.getName() + " of class " + m.getClass().getName() + " has unsupported parameters. "
+                        + "Supported parameters are: (), (CommandSender s), (String[] args), (CommandSender s, String[] args).");
     }
 }

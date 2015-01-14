@@ -77,4 +77,18 @@ public class CommandDefinitionTest {
         assertEquals(d.getRan(), "longcmdwithargs");
         assertEquals(d.getArgsPassed(), 3);
     }
+    
+    @Test
+    public void testInvalidParams() {
+        boolean exceptionThrown = false;
+        e.add(new SampleInvalidCommandDefinition());
+        try {
+            e.onCommand(new MockCommandSender(), new MockCommand("invalid"), "invalid", new String[0]);
+        } catch(RuntimeException ex) {
+            System.out.println("testInvalidParams() correctly threw an exception!");
+            exceptionThrown = true;
+        }
+        
+        assertTrue(exceptionThrown);        
+    }
 }
