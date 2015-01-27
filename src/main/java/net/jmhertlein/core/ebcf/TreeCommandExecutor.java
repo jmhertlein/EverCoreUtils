@@ -17,6 +17,7 @@
 package net.jmhertlein.core.ebcf;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,9 +36,9 @@ import org.bukkit.command.CommandSender;
  * @author joshua
  */
 public class TreeCommandExecutor implements CommandExecutor {
-
     private CommandNode root;
     private Set<CommandLeaf> leaves;
+    private List<PreCommandRunnable> preCmdHooks;
 
     /**
      * Creates a new instance of a TreeCommandExecutor
@@ -47,6 +48,7 @@ public class TreeCommandExecutor implements CommandExecutor {
     public TreeCommandExecutor() {
         root = new CommandNode(null, null);
         leaves = new HashSet<>();
+        preCmdHooks = new ArrayList<>();
     }
     
     public void add(final CommandDefinition c) {
@@ -140,7 +142,7 @@ public class TreeCommandExecutor implements CommandExecutor {
             return true;
         }
         try {
-            selectedLeaf.executable.execute(sender, command, cmdArgs);
+            selectedLeaf.executable.execute(sender, command, cmdArgs, preCmdHooks);
         } catch (InsufficientPermissionException ex) {
             if (ex.hasCustomMessage())
                 sender.sendMessage(ChatColor.RED + ex.getCustomMessage());
@@ -226,5 +228,9 @@ public class TreeCommandExecutor implements CommandExecutor {
         }
 
         return null;
+    }
+    
+    public void addPreCommandHook(PreCommandRunnable h) {
+        preCmdHooks.add(h);
     }
 }
