@@ -107,17 +107,22 @@ public class TreeCommandExecutor implements CommandExecutor {
             return false;
 
         int i = 0;
+        traversalLoop:
         while (!cur.children.isEmpty() && i < args.length) {
             CommandNode next = cur.getChild(args[i]);
             if (next == null)
                 next = getAutoCompletedNextNode(cur, args[i]);
 
-            if (next == null) {
+            if (next != null) {
+                cur = next;
+                i++;
+            } else if(cur.executable != null){
+                break traversalLoop; //unnecessary but may prevent future bugs
+            } else {
                 sendInvalidCommandHelp(sender, root, cur, args[i]);
                 return true;
             }
-            cur = next;
-            i++;
+            
         }
 
         CommandNode selectedLeaf = cur;

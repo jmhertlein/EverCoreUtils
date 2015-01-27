@@ -100,4 +100,16 @@ public class CommandDefinitionTest {
         e.onCommand(new MockCommandSender(), new MockCommand("param"), "param", new String[]{"sender"});
         assertEquals(d.getRan(), "paramsender");
     }
+    
+    @Test
+    public void testPrefixedCommands() {
+        e.onCommand(new MockCommandSender(), new MockCommand("prefixed"), "prefixed", new String[]{"command"});
+        assertEquals(d.getRan(), "prefixedCommand");
+        e.onCommand(new MockCommandSender(), new MockCommand("prefixed"), "prefixed", new String[]{"command", "arg1", "arg2"});
+        assertEquals(d.getRan(), "prefixedCommand");
+        assertEquals(d.getArgsPassed(), 2);
+        e.onCommand(new MockCommandSender(), new MockCommand("prefixed"), "prefixed", new String[]{"command", "exec", "arg1"});
+        assertEquals(d.getRan(), "prefixedCommandExec");
+        assertEquals(d.getArgsPassed(), 1);
+    }
 }

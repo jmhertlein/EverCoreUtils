@@ -90,6 +90,18 @@ public class SampleCommandDefinition implements CommandDefinition {
     public void paramSender(CommandSender sender) {
         ran="paramsender";
     }
+    
+    @CommandMethod(path = "prefixed command", console = true)
+    public void prefixedCommand(String[] args) {
+        ran = "prefixedCommand";
+        argsPassed = args.length;
+    }
+    
+    @CommandMethod(path = "prefixed command exec", console = true, requiredArgs = 1)
+    public void prefixedCommandExec(String[] args) {
+        ran = "prefixedCommandExec";
+        argsPassed = args.length;
+    }
 
     public String getRan() {
         return ran;
