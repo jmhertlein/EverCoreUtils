@@ -16,8 +16,6 @@
  */
 package net.jmhertlein.core.ebcf.test;
 
-import net.jmhertlein.core.ebcf.CommandDefinition;
-import net.jmhertlein.core.ebcf.PreCommandRunnable;
 import net.jmhertlein.core.ebcf.TreeCommandExecutor;
 import org.junit.After;
 import org.junit.Before;
@@ -113,20 +111,5 @@ public class CommandDefinitionTest {
         e.onCommand(new MockCommandSender(), new MockCommand("prefixed"), "prefixed", new String[]{"command", "exec", "arg1"});
         assertEquals(d.getRan(), "prefixedCommandExec");
         assertEquals(d.getArgsPassed(), 1);
-    }
-    
-    @Test
-    public void testSimpleWithHooks() {
-        final boolean[] ran = new boolean[] {false};
-        e.addPreCommandHook(new PreCommandRunnable() {
-
-            @Override
-            public void run(CommandDefinition d) {
-                ran[0] = true;
-            }
-        });
-        e.onCommand(new MockCommandSender(), new MockCommand("sayone"), "sayone", new String[0]);
-        assertEquals(d.getRan(), "sayone");
-        assertTrue(ran[0]);
     }
 }

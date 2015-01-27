@@ -100,14 +100,13 @@ public class CommandLeaf {
      * @param cmd
      * @param args required arguments and optional arguments, required arguments
      * first.
-     * @param hooks
      *
      * @throws InsufficientPermissionException if the sender doesn't have
      * sufficient permission to run the command
      * @throws UnsupportedCommandSenderException if the sender is not able to
      * run the command (example: sender is console instead of Player)
      */
-    public void execute(CommandSender sender, Command cmd, String[] args, List<PreCommandRunnable> hooks) throws InsufficientPermissionException, UnsupportedCommandSenderException {
+    public void execute(CommandSender sender, Command cmd, String[] args) throws InsufficientPermissionException, UnsupportedCommandSenderException {
         if (!info.permNode().isEmpty() && !sender.hasPermission(info.permNode())) {
             throw new InsufficientPermissionException();
         }
@@ -116,11 +115,7 @@ public class CommandLeaf {
         if ((isPlayer && !info.player()) || (!isPlayer && !info.console())) {
             throw new UnsupportedCommandSenderException(sender);
         }
-        
-        for(PreCommandRunnable h : hooks) {
-            h.run(caller);
-        }
-        
+
         try {
             Type[] t = m.getParameterTypes();
             if(t.length == 0) {
