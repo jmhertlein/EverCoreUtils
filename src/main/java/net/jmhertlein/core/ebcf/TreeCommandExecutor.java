@@ -17,11 +17,13 @@
 package net.jmhertlein.core.ebcf;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import net.jmhertlein.core.ebcf.annotation.CommandMethod;
@@ -42,22 +44,23 @@ public class TreeCommandExecutor implements CommandExecutor {
     /**
      * Creates a new instance of a TreeCommandExecutor
      *
-     * It is ready to have leaves added to it and to be set as the executor for a command
+     * It is ready to have leaves added to it and to be set as the executor for
+     * a command
      */
     public TreeCommandExecutor() {
         root = new CommandNode(null, null);
         leaves = new HashSet<>();
     }
-    
+
     public void add(final CommandDefinition c) {
         Method[] methods = c.getClass().getMethods();
-        
-        for(final Method m : methods) {
+
+        for (final Method m : methods) {
             final CommandMethod cmdInfo = (CommandMethod) m.getAnnotation(CommandMethod.class);
-            if(cmdInfo == null) {
+            if (cmdInfo == null) {
                 continue;
             }
-                    
+
             CommandLeaf f = new CommandLeaf(cmdInfo, m, c);
             add(f);
         }
@@ -82,8 +85,9 @@ public class TreeCommandExecutor implements CommandExecutor {
             temp = next;
         }
 
-        if (temp.executable != null)
+        if (temp.executable != null) {
             throw new RuntimeException("Error: leaf node already has command bound");
+        }
 
         temp.executable = cmd;
         leaves.add(cmd);
@@ -100,32 +104,15 @@ public class TreeCommandExecutor implements CommandExecutor {
      */
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandNode cur = root.getChild(command.getName());
-        if (cur == null)
-            cur = getAutoCompletedNextNode(root, label);
-        if (cur == null)
-            return false;
+        TraversalResult r = traverseToEnd(command.getName(), args);
 
-        int i = 0;
-        traversalLoop:
-        while (!cur.children.isEmpty() && i < args.length) {
-            CommandNode next = cur.getChild(args[i]);
-            if (next == null)
-                next = getAutoCompletedNextNode(cur, args[i]);
+        CommandNode selectedLeaf = r.node;
+        int i = r.argsPosition;
 
-            if (next != null) {
-                cur = next;
-                i++;
-            } else if(cur.executable != null){
-                break traversalLoop; //unnecessary but may prevent future bugs
-            } else {
-                sendInvalidCommandHelp(sender, root, cur, args[i]);
-                return true;
-            }
-            
+        if (selectedLeaf == null) {
+            sendInvalidCommandHelp(sender, root, selectedLeaf, args[i]);
+            return true;
         }
-
-        CommandNode selectedLeaf = cur;
         //once we reach the end, assume the rest of the stuff in args are actually arguments
         if (selectedLeaf.executable == null) {
             sendIncompleteCommandHelp(sender, root, selectedLeaf);
@@ -142,10 +129,11 @@ public class TreeCommandExecutor implements CommandExecutor {
         try {
             selectedLeaf.executable.execute(sender, command, cmdArgs);
         } catch (InsufficientPermissionException ex) {
-            if (ex.hasCustomMessage())
+            if (ex.hasCustomMessage()) {
                 sender.sendMessage(ChatColor.RED + ex.getCustomMessage());
-            else
+            } else {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to run this command.");
+            }
             return true;
         } catch (UnsupportedCommandSenderException ex) {
             sender.sendMessage(ChatColor.RED + "This command does not support being run in your context (you're probably console!).");
@@ -157,36 +145,11 @@ public class TreeCommandExecutor implements CommandExecutor {
 
     private static List<String> composeChildNodesString(CommandNode selectedLeaf) {
         List<String> ret = new LinkedList<>();
-        for (CommandNode child : selectedLeaf.children.values())
+        for (CommandNode child : selectedLeaf.children.values()) {
             ret.add(child.nodeString);
-        
+        }
+
         return ret;
-    }
-
-    private class CommandNode {
-
-        CommandNode parent;
-        CommandLeaf executable;
-        String nodeString;
-        Map<String, CommandNode> children;
-
-        public CommandNode() {
-            children = new HashMap<>();
-        }
-
-        public CommandNode(CommandNode parent, String nodeString) {
-            this.parent = parent;
-            this.nodeString = nodeString;
-            children = new HashMap<>();
-        }
-
-        public void addChild(CommandNode n) {
-            children.put(n.nodeString, n);
-        }
-
-        public CommandNode getChild(String nodeString) {
-            return children.get(nodeString);
-        }
     }
 
     /**
@@ -221,10 +184,101 @@ public class TreeCommandExecutor implements CommandExecutor {
 
     private static CommandNode getAutoCompletedNextNode(CommandNode node, String token) {
         for (CommandNode n : node.children.values()) {
-            if (n.nodeString.startsWith(token))
+            if (n.nodeString.startsWith(token)) {
                 return n;
+            }
         }
 
         return null;
+    }
+
+    public List<String> getTabCompletions(String name, String[] args) {
+        TraversalResult r = traverseToEnd(name, args);
+
+        if (r.argsPosition < args.length - 1) {
+            return Collections.EMPTY_LIST;
+        } else {
+            Set<String> completions = r.node.children.keySet();
+            List<String> ret = new ArrayList<>(completions.size());
+            ret.addAll(completions);
+
+            //if there's exactly one token remaining, try to filter
+            if (r.argsPosition == args.length - 1) {
+                ListIterator<String> i = ret.listIterator();
+                while (i.hasNext()) {
+                    if (!i.next().startsWith(args[r.argsPosition])) {
+                        i.remove();
+                    }
+                }
+            }
+
+            return ret;
+        }
+    }
+
+    private TraversalResult traverseToEnd(String name, String[] args) {
+        CommandNode cur = null, next = root.getChild(name);
+
+        int i = -1; //Bukkit wants name and args separate, so the thing before args[0] is name.
+        while(next != null) {
+            i++;
+            cur = next;
+            if(!cur.children.isEmpty() && i < args.length) {
+                next = cur.getChild(args[i]);
+            } else {
+                next = null;
+            }
+        }
+
+        //The contract of argsPosition is that it's the beginning pos in args[] that's args,
+        //so we shouldn't return -1
+        return new TraversalResult(cur, cur == null ? 0 : i);
+    }
+
+    private static class TraversalResult {
+
+        /**
+         * The last node that was able to be matched
+         */
+        CommandNode node;
+        /**
+         * The beginning (inclusive) of the sub-array in args that did not get
+         * used when traversing to node.
+         *
+         * i.e. these are not part of the command, they're arguments or the
+         * incorrect trailing part of a malformed command
+         */
+        int argsPosition;
+
+        public TraversalResult(CommandNode node, int argsPosition) {
+            this.node = node;
+            this.argsPosition = argsPosition;
+        }
+    }
+
+    private class CommandNode {
+
+        CommandNode parent;
+        CommandLeaf executable;
+        String nodeString;
+        Map<String, CommandNode> children;
+
+        public CommandNode() {
+            children = new HashMap<>();
+        }
+
+        public CommandNode(CommandNode parent, String nodeString) {
+            this.parent = parent;
+            this.nodeString = nodeString;
+            children = new HashMap<>();
+        }
+
+        public void addChild(CommandNode n) {
+            children.put(n.nodeString, n);
+        }
+
+        public CommandNode getChild(String nodeString) {
+            return children.get(nodeString);
+        }
     }
 }
