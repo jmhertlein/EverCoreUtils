@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -146,9 +145,9 @@ public class TreeCommandExecutor implements CommandExecutor {
 
     private static List<String> composeChildNodesString(CommandNode selectedLeaf) {
         List<String> ret = new LinkedList<>();
-        for (CommandNode child : selectedLeaf.children.values()) {
+        selectedLeaf.children.values().stream().forEach((child) -> {
             ret.add(child.nodeString);
-        }
+        });
 
         return ret;
     }
@@ -166,17 +165,17 @@ public class TreeCommandExecutor implements CommandExecutor {
         //print children node strings
         sender.sendMessage(ChatColor.RED + "Incomplete command: \"/" + composeCommandParentage(root, selectedLeaf) + "\"");
         sender.sendMessage(ChatColor.YELLOW + "Possible completions:");
-        for (String s : composeChildNodesString(selectedLeaf)) {
+        composeChildNodesString(selectedLeaf).stream().forEach((s) -> {
             sender.sendMessage(ChatColor.AQUA + s);
-        }
+        });
     }
 
     private static void sendInvalidCommandHelp(CommandSender sender, CommandNode root, CommandNode currentNode, String invalidNodeString) {
         sender.sendMessage(String.format("%sInvalid command: \"%s%s%s\"", ChatColor.RED, ChatColor.DARK_RED, composeCommandParentage(root, currentNode) + " " + invalidNodeString, ChatColor.RED));
         sender.sendMessage(String.format("%sPossible replacements for \"%s%s%s\"", ChatColor.YELLOW, ChatColor.DARK_RED, invalidNodeString, ChatColor.YELLOW));
-        for (String s : composeChildNodesString(currentNode)) {
+        composeChildNodesString(currentNode).stream().forEach((s) -> {
             sender.sendMessage(ChatColor.AQUA + s);
-        }
+        });
     }
 
     private static String composeCommandParentage(CommandNode root, CommandNode n) {
