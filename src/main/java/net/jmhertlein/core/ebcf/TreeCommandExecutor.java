@@ -183,16 +183,6 @@ public class TreeCommandExecutor implements CommandExecutor {
         return n.parent == root ? n.nodeString : composeCommandParentage(root, n.parent) + " " + n.nodeString;
     }
 
-    private static CommandNode getAutoCompletedNextNode(CommandNode node, String token) {
-        for (CommandNode n : node.children.values()) {
-            if (n.nodeString.startsWith(token)) {
-                return n;
-            }
-        }
-
-        return null;
-    }
-
     public List<String> getTabCompletions(String name, String[] args) {
         TraversalResult r = traverseToEnd(name, args);
 
