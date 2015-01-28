@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.jmhertlein.core.ebcf.annotation.CommandMethod;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -198,18 +199,15 @@ public class TreeCommandExecutor implements CommandExecutor {
         if (r.argsPosition < args.length - 1) {
             return Collections.EMPTY_LIST;
         } else {
-            Set<String> completions = r.node.children.keySet();
-            List<String> ret = new ArrayList<>(completions.size());
-            ret.addAll(completions);
-
+            List<String> ret;
             //if there's exactly one token remaining, try to filter
             if (r.argsPosition == args.length - 1) {
-                ListIterator<String> i = ret.listIterator();
-                while (i.hasNext()) {
-                    if (!i.next().startsWith(args[r.argsPosition])) {
-                        i.remove();
-                    }
-                }
+                ret = r.node.children.keySet().stream()
+                        .filter(s -> s.startsWith(args[r.argsPosition]))
+                        .collect(Collectors.toList());
+            } else {
+                ret = new ArrayList<>(r.node.children.keySet().size());
+                ret.addAll(r.node.children.keySet());
             }
 
             return ret;
