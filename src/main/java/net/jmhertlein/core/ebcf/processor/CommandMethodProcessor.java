@@ -25,6 +25,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 
@@ -34,7 +35,8 @@ import javax.tools.Diagnostic.Kind;
  */
 @SupportedAnnotationTypes("net.jmhertlein.core.ebcf.annotation.CommandMethod")
 public class CommandMethodProcessor extends AbstractProcessor {
-    private static final String ERR_MSG = "CommandMethod-annotated method params must be either (), (CommandSender), (String[]), or (CommandSender,String[])";
+    private static final String ERR_MSG_PARAMS = "CommandMethod-annotated method params must be either (), (CommandSender), (String[]), or (CommandSender,String[])";
+    private static final String ERR_MSG_VISIBILITY = "CommandMethod-annotated methods must be public.";
     private static final Set<List<String>> validParamsLists = new HashSet<List<String>>() {{
         add(new ArrayList<>(0));
         add(new ArrayList<String>(1) {{ add(org.bukkit.command.CommandSender.class.getCanonicalName()); }});
@@ -53,9 +55,13 @@ public class CommandMethodProcessor extends AbstractProcessor {
                     .filter(e -> e instanceof ExecutableElement)
                     .map(e -> (ExecutableElement) e)
                     .forEach(executable -> {
+                        if(!executable.getModifiers().contains(Modifier.PUBLIC)) {
+                            processingEnv.getMessager().printMessage(Kind.ERROR, ERR_MSG_VISIBILITY, executable);
+                        }
+                        
                         List<String> params = executable.getParameters().stream().map(p -> p.asType().toString()).collect(Collectors.toList());
                         if(!validParamsLists.stream().anyMatch(goodList -> goodList.equals(params))) {
-                            processingEnv.getMessager().printMessage(Kind.ERROR, ERR_MSG, executable);
+                            processingEnv.getMessager().printMessage(Kind.ERROR, ERR_MSG_PARAMS, executable);
                         }
                     });
         });
